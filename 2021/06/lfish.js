@@ -10,7 +10,7 @@ function run(n){
 })
 }
 
-run(numDays);
+if(require.main === module) run(numDays);
 
 function p1(data, numDays) {
   const dataset = parseInput(data);
