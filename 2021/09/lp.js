@@ -23,6 +23,13 @@ function part1(input) {
   return result;
 }
 
+function part2(input) {
+  // TODO: take low points array from p1
+  // call the recursive getBasin() for each low point and collect results in an array of arrays
+  // compare sizes and multiply the length of 3 longest
+  return 1134 //stub;
+}
+
 function getGrid(str, grid) {
   const lines = str.split('\n').filter(line => line !== '');
   grid.cols = lines[0].split('').length;
@@ -58,7 +65,13 @@ const getAdj = (index, sg, grid) => {
   return Object.values(adjs).filter(val => val !== null);
 }
 
+const getBasinSize = (index, grid) => {
+  // TODO: This function takes a given low point and recursively chases out orthagonally collecting points until it hits a 9....how do you not double count - you pnly have to watch indexes and don't double dip!! Should return total count of spaces(indexes) in a basin.
+
+  return 3 //stub - basin one in the sample
+}
+
 function getRisks(lowsArr){
   return lowsArr.map(val => val + 1);
 }
-module.exports = { part1, getGrid, getLows, getAdj, getRisks }
+module.exports = { part1, getGrid, getLows, getAdj, getRisks, getBasinSize, part2 }

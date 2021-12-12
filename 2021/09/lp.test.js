@@ -1,4 +1,4 @@
-const { part1, getGrid, getLows, getAdj, getRisks } = require('./lp.js');
+const { part1, part2, getGrid, getLows, getAdj, getRisks, getBasinSize, } = require('./lp.js');
 
 const sample1 = `2199943210
 3987894921
@@ -11,6 +11,10 @@ describe('main puzzle runs', () => {
   it('part1(sample1) equals 15', () => {
     expect(part1(sample1)).toEqual(15);
   });
+
+  it('part2(sample1) equals 1134', () => {
+    expect(part2(sample1)).toEqual(1134);
+  })
 })
 
 describe('define grid', () => {
@@ -39,8 +43,15 @@ describe('collect lowpoint values', () => {
   it('getLows(sample1, rows, cols) returns [1,0,5,5]', () => {
     expect(getLows(sample1, grid.rows, grid.cols)).toEqual([1, 0, 5, 5]);
   })
+
+  describe('get basin sizes',() => {
+    it('getBasinSize(1) should return size 3', () => {
+      expect(getBasinSize(1, sg)).toEqual(3);
+    })
+  })
 })
 
 test('getRisks([1,0,5,5] should return [2, 1, 6, 6]', () => {
   expect(getRisks([1,0,5,5])).toEqual([2,1,6,6]);
 })
+
