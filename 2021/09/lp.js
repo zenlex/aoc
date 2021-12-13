@@ -7,11 +7,13 @@ fs.readFile(path.join(__dirname, 'input.txt'), 'utf-8', (err, data) => {
   if (err) console.error(err);
   if (require.main === module) {
     part1(data);
+    part2(data);
   }
 })
 const grid = {
   rows: null,
-  cols: null
+  cols: null,
+  lowIndexes: new Set()
 };
 
 function part1(input) {
@@ -24,10 +26,19 @@ function part1(input) {
 }
 
 function part2(input) {
-  // TODO: take low points array from p1
-  // call the recursive getBasin() for each low point and collect results in an array of arrays
-  // compare sizes and multiply the length of 3 longest
-  return 1134 //stub;
+  const basinSizes = new Map();
+  getLows(input, grid.rows, grid.cols);
+  const startPoints = grid.lowIndexes;
+  for (const start of startPoints) {
+    basinSizes.set(start, getBasinSize(start, input));
+  }
+
+  let result = Array.from(basinSizes.values())
+    .sort((a, b) => a - b)
+    .slice(-3)
+    .reduce((sum, val) => sum * val, 1);
+  console.log('p2 Result: ', result);
+  return result;
 }
 
 function getGrid(str, grid) {
@@ -39,15 +50,16 @@ function getGrid(str, grid) {
 }
 
 function getLows(str, rows, cols) {
-  
+
   const sg = str.split('')
     .map(char => parseInt(char))
     .filter(val => !isNaN(val));
 
   const lows = [];
   for (let i = 0; i < rows * cols; i++) {
-    if (getAdj(i, sg, grid).every(val => val > sg[i])){
+    if (getAdj(i, sg, grid).every(val => val > sg[i])) {
       lows.push(sg[i]);
+      grid.lowIndexes.add(i);
     }
 
   }
@@ -59,19 +71,66 @@ const getAdj = (index, sg, grid) => {
   const rows = grid.rows;
   const adjs = {};
   adjs.up = index < cols ? null : sg[index - cols];
-  adjs.right = (index + 1) % cols === 0  ? null : sg[index + 1];
+  adjs.right = (index + 1) % cols === 0 ? null : sg[index + 1];
   adjs.down = index >= (rows - 1) * cols ? null : sg[index + cols];
-  adjs.left = index % cols === 0? null : sg[index - 1];
+  adjs.left = index % cols === 0 ? null : sg[index - 1];
   return Object.values(adjs).filter(val => val !== null);
 }
 
-const getBasinSize = (index, grid) => {
-  // TODO: This function takes a given low point and recursively chases out orthagonally collecting points until it hits a 9....how do you not double count - you pnly have to watch indexes and don't double dip!! Should return total count of spaces(indexes) in a basin.
+const getBasinSize = (index, inputStr) => {
+  const searchGrid = inputStr.split('')
+    .map(char => parseInt(char))
+    .filter(val => !isNaN(val));
 
-  return 3 //stub - basin one in the sample
+  let pos = index;
+  let counted = new Map([[pos, false]]);
+  const cols = grid.cols;
+  const rows = grid.rows;
+
+  const isTopEdge = (pos) => pos < cols;
+  const isRightEdge = (pos) => (pos + 1) % cols === 0
+  const isBottomEdge = (pos) => pos >= (rows - 1) * cols
+  const isLeftEdge = (pos) => pos % cols === 0
+  const isCounted = (pos) => counted.has(pos);
+
+  const rippleSearch = (pos) => {
+    counted.set(pos, true);
+    if (!isTopEdge(pos)) {
+      if (searchGrid[pos - cols] !== 9
+        && !isCounted(pos - cols)) {
+        counted.set(pos - cols, false);
+      }
+    }
+    if (!isRightEdge(pos)) {
+      if (searchGrid[pos + 1] !== 9
+        && !isCounted(pos + 1)) {
+        counted.set(pos + 1, false);
+      }
+    }
+    if (!isBottomEdge(pos)) {
+      if (searchGrid[pos + cols] !== 9
+        && !isCounted(pos + cols)) {
+        counted.set(pos + cols, false);
+      }
+    }
+    if (!isLeftEdge(pos)) {
+      if (searchGrid[pos - 1] !== 9
+        && !isCounted(pos - 1)) {
+        counted.set(pos - 1, false);
+      }
+    }
+  }
+
+  for (const [pos, searched] of counted) {
+    if (!searched)
+    rippleSearch(pos);
+  }
+
+  return counted.size;
 }
 
-function getRisks(lowsArr){
+
+function getRisks(lowsArr) {
   return lowsArr.map(val => val + 1);
 }
-module.exports = { part1, getGrid, getLows, getAdj, getRisks, getBasinSize, part2 }
+module.exports = { part1, getGrid, getLows, getAdj, getRisks, getBasinSize, part2, }
