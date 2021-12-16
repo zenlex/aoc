@@ -68,14 +68,20 @@ function getAllPaths(start, end, paths = [], currPath = [], map, smallLimit = 1)
   currNode.checked = currNode.checked + 1;
 
   if (currNode === end) {
-    let repeats = 0;
-    for (let i = 0; i < currPath.length; i++) {
-      if (currPath[i].toUpperCase() === currPath[i]) continue;
-      if (currPath.indexOf(currPath[i], i + 1) > 0) {
-        repeats += 1;
-      }
+    let counts = {};
+    currPath.forEach(node => {
+      if (node.toUpperCase() !== node){
+        counts[node] = (counts[node] || 0) + 1;
+      } // skip large caves
+    });
+    let validPath = true;
+    if(counts.start > 1 || counts.end > 1) validPath = false;
+    const repeats = [];
+    for (const cave in counts){
+      if(counts[cave] > 1) repeats.push(cave);
     }
-    if (repeats < 2) {
+    if(repeats.length > 1) validPath = false;
+    if(validPath) {
       paths.push([...currPath]);
     }
 
