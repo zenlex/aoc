@@ -10,10 +10,9 @@ fs.readFile(path.join(__dirname, 'input.txt'), 'utf-8', (err, input) => {
   }
 })
 
-
 function part1(puzzleInput) {
   const { dots, folds } = parseInput(puzzleInput);
-  
+
   const foldedDots = foldDots(dots, [folds[0]]);
   const uniqueCoords = [...foldedDots.values()];
   const result = uniqueCoords.reduce((total, yset) => total + yset.size, 0);
@@ -38,7 +37,20 @@ function part2(puzzleInput) {
     }
   }
   console.log('part2 Result:\n');
-  console.table(dotarr);
+  const LETTER_WIDTH = Math.ceil(cols / 8);
+  let currLetter = [];
+  for(let letter = 0; letter < 8; letter++){
+    currLetter = [];
+    for(let row = 0; row < rows; row ++){
+      currLetter.push([]);
+      for(let col = letter * LETTER_WIDTH; col < (letter + 1) * LETTER_WIDTH ; col++){
+        const val = dotarr[row][col] === 'X' ? '[#]': ' . '
+        currLetter[row].push(val);
+      }
+    }
+    console.log(`LETTER #: ${letter + 1}`);
+    console.table(currLetter);
+  }
 }
 
 

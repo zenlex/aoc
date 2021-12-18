@@ -41,19 +41,3 @@ test('getGridSize(dots) should return [11, 15]', () => {
   expect(getGridSize(dots)).toEqual([11, 15]);
 })
 
-// describe('foldDot should reflect dot coordinates across axis', () => {
-//   const dots = parseInput(sample);
-//   const foldedDots = 
-//   it('fold([3,9],null , 7) should return [3, 5]', () => {
-//     let testDot = {x:3, y:9};
-//     let testee = fold(testDot, null, 7);
-//     expect(testee).toEqual({x:3, y:5});
-//   })
-//   it('fold([2,7], 1, null) should return [0,7]', () => {
-//     let testDot = {x:2, y:7};
-//     let testee = fold(testDot, 1, null);
-//     expect(testee).toEqual({x:0, y:7})
-
-//   })
-
-// })

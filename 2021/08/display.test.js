@@ -1,6 +1,6 @@
 const { part1, part2, parse, getData, isAnagram, getLegend, getOutput, subLetters } = require('./display.js');
 const path = require('path');
-const { abort } = require('process');
+
 test(
   'getData should return string', async () => {
     const data = await getData(path.join(__dirname, 'example.txt'));
@@ -11,7 +11,9 @@ test(
 test(`parse(str) should return map of input => output signals`, () => {
   const testee = `be cfbegad cbdgef | fdgacbe cefdb
   be cfbegad cbdgef | fdgacbe cefdb`;
-  const result = new Map([[["be", "cfbegad", "cbdgef"], ["fdgacbe", "cefdb"]], [["be", "cfbegad", "cbdgef"], ["fdgacbe", "cefdb"]]])
+
+  const result = new Map([[["be", "cfbegad", "cbdgef"], ["fdgacbe", "cefdb"]], [["be", "cfbegad", "cbdgef"], ["fdgacbe", "cefdb"]]]);
+
   expect(parse(testee)).toEqual(result);
 })
 
@@ -41,7 +43,7 @@ describe('get Legend should decipher a map of 10 strings to keys 0-9', () => {
   it('getLegend(test text) should return map of 10 strings', () => {
     const testText = 'acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab';
     const vals = testText.split(' ');
-    const tester = new Map([[8, 'acedgfb'], [5, 'cdfbe'], [2, 'gcdfa'], [3, 'fbcad'], [7, 'dab'], [9, 'cefabd'], [6 , 'cdfgeb'], [4, 'eafb'], [0, 'cagedb'], [1, 'ab']])
+    const tester = new Map([[8, 'acedgfb'], [5, 'cdfbe'], [2, 'gcdfa'], [3, 'fbcad'], [7, 'dab'], [9, 'cefabd'], [6, 'cdfgeb'], [4, 'eafb'], [0, 'cagedb'], [1, 'ab']])
     const testee = getLegend(vals);
     expect(testee).toEqual(tester);
   })
