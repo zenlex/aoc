@@ -1,4 +1,4 @@
-const { part1, part2, initCounts, getPairs, mapRules, insertElem, incrPoly, runInsertion, runSteps } = require('./polymers');
+const { part1, part2, initCounts, getPairs, mapRules, incrPoly, } = require('./polymers');
 
 const sample = `NNCB
 
@@ -19,7 +19,7 @@ BC -> B
 CC -> N
 CN -> C`;
 
-it('getPairs returns arr of overlapping char pairs', () => {
+test('getPairs returns arr of overlapping char pairs', () => {
   expect(getPairs('NNCB')).toEqual(['NN', 'NC', 'CB']);
 })
 

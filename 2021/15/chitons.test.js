@@ -1,4 +1,4 @@
-const {part1, part2} = require('./chitons');
+const { part1, part2 } = require('./chitons');
 
 const sample = `1163751742
 1381373672
@@ -13,10 +13,11 @@ const sample = `1163751742
 
 
 describe('main puzzle runs get samples correct', () => {
-  it('expects part1 to return true', () => {
+  it('expects part1 to return 40 with sample input', () => {
     expect(part1(sample)).toEqual(40);
   });
   it('expects part2 to return true', () => {
     expect(part2()).toEqual(true);
   });
 })
+
