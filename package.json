@@ -3,6 +3,10 @@
     "jest": "^27.4.3"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "testwatch": "jest --watch"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0"
   }
 }
