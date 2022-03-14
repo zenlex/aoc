@@ -1,3 +1,3 @@
-Advent of Code Exercise Scratchpad
+#Advent of Code 
 
 (Data Structures and Algorithms Study)
