@@ -1,5 +1,5 @@
 namespace template {
-	function main(): void {
+	function main(input: string): void {
 		console.log('hello advent typescript');
 	}
 
@@ -11,7 +11,7 @@ namespace template {
 		expect(false).toBe(false);
 	});
 
-	afterAll(main);
+	afterAll(() => main(input));
 
 	const input: string = '';
 }

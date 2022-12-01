@@ -1,5 +1,5 @@
 namespace dayone {
-	function main(): void {
+	function main(input: string): void {
 		console.log('hello advent typescript day 1');
 	}
 
@@ -11,7 +11,7 @@ namespace dayone {
 		expect(false).toBe(false);
 	});
 
-	afterAll(main);
+	afterAll(() => main(input));
 
 	const input: string = '';
 }
