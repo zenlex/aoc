@@ -26,6 +26,7 @@ function part2(puzzleInput) {
 }
 
 function getSafestPath(riskNodes, start, end) {
+// TODO - this doesn't return the right value. Debug and figure out why. Going to have to implement a heap for p2 I think...
 
   const minDistance = (dists, visited) => {
     let min = Number.MAX_VALUE;
