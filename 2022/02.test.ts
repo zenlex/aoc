@@ -3,19 +3,18 @@ import sampleInput from './inputs/02-sample'
 import './string.extensions'
 
 namespace daytwo {
-	function main(input: string): number {
+	function main(input: string): { p1: number, p2: number } {
 		const rounds = input.toLines();
-		return rounds.reduce((sum, round) => {
-			return sum + scoreRound(round);
+		const p1 = rounds.reduce((sum, round) => {
+			return sum + scoreRound(round, 'p1');
 		}, 0)
+		const p2 = rounds.reduce((sum, round) => {
+			return sum + scoreRound(round, 'p2');
+		}, 0)
+		return { p1, p2 }
 	}
 
-	function main2(input: string): number {
-		const rounds = input.toLines();
-		return rounds.reduce((sum, round) => {
-			return sum + scoreRound2(round);
-		}, 0)
-	}
+	type Translator = 'p1' | 'p2'
 	interface StringToNum {
 		[choice: string]: number
 	}
@@ -48,14 +47,16 @@ namespace daytwo {
 		Z: { result: 'win', score: 6 }
 	}
 
-	function scoreRound(round: string): number {
-		return choiceScores[round.substring(2)] + resultScores[round];
-	}
-
-	function scoreRound2(round: string): number {
-		const desiredResult = resultMap[round.substring(2)]
-		const opponentChoice = round.substring(0, 1);
-		return desiredResult.score + choiceScores[getChoice(opponentChoice, desiredResult.result)]
+	function scoreRound(round: string, translator: Translator): number {
+		if (translator == 'p1') {
+			return choiceScores[round.substring(2)] + resultScores[round];
+		}
+		if (translator == 'p2') {
+			const desiredResult = resultMap[round.substring(2)]
+			const opponentChoice = round.substring(0, 1);
+			return desiredResult.score + choiceScores[getChoice(opponentChoice, desiredResult.result)]
+		}
+		return 0;
 	}
 
 	function getChoice(opp: string, result: string): string {
@@ -74,12 +75,12 @@ namespace daytwo {
 	}
 
 	test('example 1', function (): void {
-		expect(main(sampleInput)).toBe(15);
+		expect(main(sampleInput).p1).toBe(15);
 	});
 
 	test('example 2', function (): void {
-		expect(main2(sampleInput)).toBe(12);
+		expect(main(sampleInput).p2).toBe(12);
 	});
 
-	afterAll(() => console.log(`answer1:${main(input)}, answer2: ${main2(input)}`));
+	afterAll(() => console.log(`answers:${main(input)}`));
 }
