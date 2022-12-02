@@ -1,5 +1,4 @@
-export default
-	`3427
+export default`3427
 3273
 5615
 5943
@@ -2241,4 +2240,5 @@ export default
 5900
 5862
 2002
-1870`
+1870
+`
