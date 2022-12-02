@@ -6,72 +6,72 @@ namespace daytwo {
 	function main(input: string): { p1: number, p2: number } {
 		const rounds = input.toLines();
 		const p1 = rounds.reduce((sum, round) => {
-			return sum + scoreRound(round, 'p1');
+			return sum + scoreRound(round, p1Translator);
 		}, 0)
 		const p2 = rounds.reduce((sum, round) => {
-			return sum + scoreRound(round, 'p2');
+			return sum + scoreRound(round, p2Translator);
 		}, 0)
 		return { p1, p2 }
 	}
 
-	type Translator = 'p1' | 'p2'
-	interface StringToNum {
-		[choice: string]: number
+	interface Translator { [choice: string]: string };
+
+	const p1Translator: Translator = {
+		A: 'rock',
+		B: 'paper',
+		C: 'scissors',
+		X: 'rock',
+		Y: 'paper',
+		Z: 'scissors'
 	}
 
-	interface StringToResult {
-		[choice: string]: { result: 'lose' | 'win' | 'draw', score: number }
+	const p2Translator: Translator = {
+		X: 'lose',
+		Y: 'draw',
+		Z: 'win',
 	}
 
-	const choiceScores: StringToNum = {
-		X: 1,
-		Y: 2,
-		Z: 3
+	const choiceScores: { [choice: string]: number } = {
+		'rock': 1,
+		'paper': 2,
+		'scissors': 3
 	};
 
-	const resultScores: StringToNum = {
-		'A X': 3,
-		'A Y': 6,
-		'A Z': 0,
-		'B X': 0,
-		'B Y': 3,
-		'B Z': 6,
-		'C X': 6,
-		'C Y': 0,
-		'C Z': 3
+	const resultScores: { [round: string]: number } = {
+		'lose': 0,
+		'draw': 3,
+		'win': 6,
 	};
 
-	const resultMap: StringToResult = {
-		X: { result: 'lose', score: 0 },
-		Y: { result: 'draw', score: 3 },
-		Z: { result: 'win', score: 6 }
+	const roundResults: { [round: string]: string } = {
+		'rock,rock': 'draw',
+		'rock,paper': 'win',
+		'rock,scissors': 'lose',
+		'paper,paper': 'draw',
+		'paper,scissors': 'win',
+		'paper,rock': 'lose',
+		'scissors,scissors': 'draw',
+		'scissors,rock': 'win',
+		'scissors,paper': 'lose',
 	}
+
 
 	function scoreRound(round: string, translator: Translator): number {
-		if (translator == 'p1') {
-			return choiceScores[round.substring(2)] + resultScores[round];
+		const p1choice = p1Translator[round.substring(0, 1)];
+		const p2choice: string = translator[round.substring(2)]
+		if (translator == p1Translator) {
+			const result = roundResults[`${p1choice},${p2choice}`]
+			return choiceScores[p1choice] + resultScores[result];
 		}
-		if (translator == 'p2') {
-			const desiredResult = resultMap[round.substring(2)]
-			const opponentChoice = round.substring(0, 1);
-			return desiredResult.score + choiceScores[getChoice(opponentChoice, desiredResult.result)]
+		if (translator == p2Translator) {
+			const thisRound: string[] = Object.entries(roundResults)
+				.filter(([choices, result]) => result === p2choice && choices.split(',')[0] === p1choice)
+				.flat();
+			const [plays, result] = thisRound;
+			const p2play = plays.split(',')[1];
+			return choiceScores[p2play] + resultScores[result];
 		}
-		return 0;
-	}
-
-	function getChoice(opp: string, result: string): string {
-		const choices: { [goal: string]: string } = {
-			'A,win': 'Y',
-			'A,draw': 'X',
-			'A,lose': 'Z',
-			'B,win': 'Z',
-			'B,draw': 'Y',
-			'B,lose': 'X',
-			'C,win': 'X',
-			'C,draw': 'Z',
-			'C,lose': 'Y'
-		}
-		return choices[opp + ',' + result];
+		throw new Error('invalid translator')
 	}
 
 	test('example 1', function (): void {
@@ -82,5 +82,5 @@ namespace daytwo {
 		expect(main(sampleInput).p2).toBe(12);
 	});
 
-	afterAll(() => console.log(`answers:${main(input)}`));
+	afterAll(() => console.log(`answers:${JSON.stringify(main(input), null, 2)}`));
 }
