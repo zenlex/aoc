@@ -24,12 +24,14 @@ namespace daythree {
 				ruckSacks[i + 1].split(''),
 				ruckSacks[i + 2].split('')
 			];
+			
 			const badge = group[0]
 				.filter(
 					item => [group[1], group[2]].every(
 						group => group.includes(item)
 					)
-				)[0]
+				)[0];
+			
 			p2total += getPriority(badge);
 		}
 
