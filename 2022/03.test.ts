@@ -60,5 +60,5 @@ namespace daythree {
 		expect(getPriority('A')).toBe(27);
 	});
 
-	afterAll(() => console.log(JSON.stringify({ p1: main(input) }, null, 2)));
+	afterAll(() => console.log(JSON.stringify(main(input), null, 2)));
 }
