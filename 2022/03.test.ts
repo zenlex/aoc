@@ -24,19 +24,21 @@ namespace daythree {
 				ruckSacks[i + 1].split(''),
 				ruckSacks[i + 2].split('')
 			];
+			
 			const badge = group[0]
-				.filter(item => [group[1], group[2]].every(group => group.includes(item)))[0]
+				.filter(
+					item => [group[1], group[2]].every(
+						group => group.includes(item)
+					)
+				)[0];
+			
 			p2total += getPriority(badge);
 		}
-
 
 		return { p1: p1total, p2: p2total };
 	}
 
 	function getPriority(item: string): number {
-		if (!(typeof item === 'string')) {
-			console.log(item)
-		}
 		let priority;
 		if (item.toUpperCase() === item) {
 			priority = item.charCodeAt(0) - 'A'.charCodeAt(0) + 27
