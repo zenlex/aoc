@@ -1,7 +1,7 @@
 import input from './inputs/04'
 import sampleInput from './inputs/04-sample'
 import './string.extensions';
-namespace template {
+namespace dayfour {
 	function main(input: string): { p1: number, p2: number } {
 
 		const pairs: string[][] = input
@@ -45,8 +45,8 @@ namespace template {
 		}
 
 		overlaps(inputRange: SectionRange) {
-			return !(this.max < inputRange.min 
-				 || this.min > inputRange.max)
+			return !(this.max < inputRange.min
+				|| this.min > inputRange.max);
 		}
 	}
 
