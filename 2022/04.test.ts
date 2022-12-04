@@ -15,10 +15,12 @@ namespace dayfour {
 				if (elf1.fullyContains(elf2)
 					|| elf2.fullyContains(elf1)) {
 					++answers[0];
-				}
-				if (elf1.overlaps(elf2)
-					|| elf2.overlaps(elf1)) {
-					++answers[1]
+					++answers[1];
+				} else if (
+					elf1.overlaps(elf2)
+					|| elf2.overlaps(elf1)
+				) {
+					++answers[1];
 				}
 				return answers;
 			}, [0, 0]);
