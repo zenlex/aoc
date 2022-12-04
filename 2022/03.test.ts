@@ -12,8 +12,13 @@ namespace daythree {
 			const compartment2 = ruckSack
 				.substring(ruckSack.length / 2)
 				.split('');
-			const duplicatedItems = compartment1.filter(item => compartment2.includes(item))
-			sum += getPriority(duplicatedItems[0]);
+			const sieve = new Set(compartment1)
+			for (let i = 0; i < compartment2.length; ++i) {
+				if (sieve.has(compartment2[i])) {
+					sum += getPriority(compartment2[i]);
+					break;
+				}
+			}
 			return sum;
 		}, 0)
 
@@ -24,14 +29,14 @@ namespace daythree {
 				ruckSacks[i + 1].split(''),
 				ruckSacks[i + 2].split('')
 			];
-			
+
 			const badge = group[0]
 				.filter(
 					item => [group[1], group[2]].every(
 						group => group.includes(item)
 					)
 				)[0];
-			
+
 			p2total += getPriority(badge);
 		}
 
