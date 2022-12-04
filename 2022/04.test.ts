@@ -16,7 +16,9 @@ namespace dayfour {
 					|| elf2.fullyContains(elf1)) {
 					++answers[0];
 					++answers[1];
-				} else if (elf1.overlaps(elf2)) {
+				} else if (
+					elf1.overlaps(elf2)
+				) {
 					++answers[1];
 				}
 				return answers;
@@ -44,8 +46,12 @@ namespace dayfour {
 		}
 
 		overlaps(inputRange: SectionRange) {
-			return !(this.max < inputRange.min
-				|| this.min > inputRange.max);
+			const [left, right] =
+				this.min < inputRange.min
+					? [this, inputRange]
+					: [inputRange, this];
+
+			return !(left.max < right.min);
 		}
 	}
 
