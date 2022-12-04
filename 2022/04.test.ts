@@ -16,10 +16,7 @@ namespace dayfour {
 					|| elf2.fullyContains(elf1)) {
 					++answers[0];
 					++answers[1];
-				} else if (
-					elf1.overlaps(elf2)
-					|| elf2.overlaps(elf1)
-				) {
+				} else if (elf1.overlaps(elf2)) {
 					++answers[1];
 				}
 				return answers;
