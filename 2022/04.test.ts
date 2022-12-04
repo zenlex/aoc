@@ -45,7 +45,8 @@ namespace template {
 		}
 
 		overlaps(inputRange: SectionRange) {
-			return !(this.max < inputRange.min || this.min > inputRange.max)
+			return !(this.max < inputRange.min 
+				 || this.min > inputRange.max)
 		}
 	}
 
