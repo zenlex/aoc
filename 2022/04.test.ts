@@ -51,7 +51,7 @@ namespace dayfour {
 					? [this, inputRange]
 					: [inputRange, this];
 
-			return !(left.max < right.min);
+			return (left.max >= right.min);
 		}
 	}
 
