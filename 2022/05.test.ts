@@ -20,7 +20,6 @@ namespace day5 {
 		});
 
 		p1 = crane1.getTopCrates()
-
 		p2 = crane2.getTopCrates()
 
 		return { p1, p2 }
