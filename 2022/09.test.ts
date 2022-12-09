@@ -70,34 +70,9 @@ namespace daynine {
 					return;
 				}
 
-				const xDiff = anchorKnot.x - currKnot.x;
-				const yDiff = anchorKnot.y - currKnot.y;
-				let deltaX = 0;
-				let deltaY = 0;
-				// check diagonal rule
-				if (
-					anchorKnot.x !== currKnot.x
-					&& anchorKnot.y !== currKnot.y
-				) {
-					deltaX = anchorKnot.x > currKnot.x ? 1 : -1;
-					deltaY = anchorKnot.y > currKnot.y ? 1 : -1;
-				} else {
-					// check orthagonal distances
-					if (xDiff > 1) {
-						deltaX = 1;
-					} else if (xDiff < -1) {
-						deltaX = -1;
-					}
-					if (yDiff > 1) {
-						deltaY = 1;
-					} else if (yDiff < -1) {
-						deltaY = -1;
-					}
-				}
-
 				// move knot
-				currKnot.x += deltaX;
-				currKnot.y += deltaY;
+				currKnot.x += Math.sign(anchorKnot.x - currKnot.x);
+				currKnot.y += Math.sign(anchorKnot.y - currKnot.y);
 			}
 
 			moveTrailingKnots(): void {

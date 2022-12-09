@@ -1,7 +1,7 @@
-import input from './inputs/01'
-import sampleInput from './inputs/01-sample'
+import input from './inputs/10'
+import sampleInput from './inputs/10-sample'
 import './string.extensions';
-namespace template {
+namespace dayten {
 	function main(input: string): { p1: number, p2: number } {
 		let p1 = 0;
 		let p2 = 0;
