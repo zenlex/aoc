@@ -15,29 +15,20 @@ namespace daynine {
 		class Rope {
 			head: Point
 			tail: Point
-			intermediateKnots: Point[] | null
-			history: Set<string> | null
+			knots: Point[]
+			history: Set<string>
 
-			constructor(numPoints: number, history?: Set<string> | null) {
+			constructor(numPoints: number, history: Set<string>) {
 				if (numPoints < 2) throw new Error('need at least 2 knots!')
 
 				const defaultOrigin: Point = { x: 0, y: 0 };
-				this.head = { ...defaultOrigin };
-				this.tail = { ...defaultOrigin };
 
-				if (numPoints > 2) {
-					this.intermediateKnots = [];
-					for (let i = numPoints - 2; i > 0; --i) {
-						this.intermediateKnots[i] = { ...defaultOrigin };
-					}
-				} else {
-					this.intermediateKnots = null;
-				}
+				this.knots = Array(numPoints).fill(null).map(_ => Object.create(defaultOrigin));
+				this.head = this.knots[0];
+				this.tail = this.knots[this.knots.length - 1];
 
-				this.history = history ?? null;
-				if (this.history) {
-					this.history.add(this.tailToString())
-				}
+				this.history = history;
+				this.history.add(this.tailToString())
 			}
 
 			moveHead(instruction: string) {
@@ -65,31 +56,19 @@ namespace daynine {
 				}
 			}
 
-			moveKnot(currKnot: Point, anchorKnot: Point = this.head) {
-				if (this.isTouching(currKnot, anchorKnot)) {
-					return;
+			moveKnot(currKnot: Point, anchorKnot: Point) {
+				if (!this.isTouching(currKnot, anchorKnot)) {
+					currKnot.x += Math.sign(anchorKnot.x - currKnot.x);
+					currKnot.y += Math.sign(anchorKnot.y - currKnot.y);
 				}
-
-				// move knot
-				currKnot.x += Math.sign(anchorKnot.x - currKnot.x);
-				currKnot.y += Math.sign(anchorKnot.y - currKnot.y);
 			}
 
 			moveTrailingKnots(): void {
-				if (this.intermediateKnots) {
-					const last = this.intermediateKnots.length - 1
-
-					for (let knotIndex = 0; knotIndex <= last; ++knotIndex) {
-						const currKnot = this.intermediateKnots[knotIndex];
-						const prevKnot = knotIndex == 1 ? this.head : this.intermediateKnots[knotIndex - 1];
-						this.moveKnot(currKnot, prevKnot)
-					}
-
-					this.moveKnot(this.tail, this.intermediateKnots[last])
-				} else {
-					this.moveKnot(this.tail);
+				for (let knotIndex = 1; knotIndex < this.knots.length; ++knotIndex) {
+					const currKnot = this.knots[knotIndex];
+					const prevKnot = this.knots[knotIndex - 1];
+					this.moveKnot(currKnot, prevKnot)
 				}
-
 				if (this.history != null) {
 					this.history.add(this.tailToString())
 				}

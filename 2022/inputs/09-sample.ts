@@ -1,6 +1,6 @@
 export default
-	`R 4
-U 4
+	`R 4`
+const remainder = `U 4
 L 3
 D 1
 R 4
