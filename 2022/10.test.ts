@@ -1,6 +1,7 @@
 import input from './inputs/10'
 import sampleInput from './inputs/10-sample'
 import './string.extensions';
+import chalk from 'chalk'
 namespace dayten {
 	function main(input: string): { p1: number, p2: string } {
 		let x = 1;
@@ -14,8 +15,8 @@ namespace dayten {
 			return [x - 1, x, x + 1].includes(currentCycle % 40 - 1);
 		}
 
-		const printCRT = (): void => {
-			currentCRTrow.push(isSpriteVisible() ? '#' : '.')
+		const illuminatePixel = (): void => {
+			currentCRTrow.push(isSpriteVisible() ? chalk.green('#') : chalk.red('.'))
 		}
 
 		const isRowEnd = (): boolean => {
@@ -25,7 +26,7 @@ namespace dayten {
 		const cycle = (count: number = 1) => {
 			while (count > 0) {
 				++currentCycle;
-				printCRT();
+				illuminatePixel();
 
 				if ((currentCycle - 20) % 40 === 0) {
 					recordSignalStrength(signalStrengths);
@@ -40,11 +41,11 @@ namespace dayten {
 			}
 		}
 
-		function recordSignalStrength(storage: number[]) {
+		const recordSignalStrength = (storage: number[]) => {
 			signalStrengths.push(currentCycle * x)
 		}
 
-		function executeInstruction(instruction: string, stepFn: Function) {
+		const executeInstruction = (instruction: string, stepFn: Function) => {
 			if (instruction.startsWith('noop')) {
 				cycle();
 			} else {
@@ -59,8 +60,18 @@ namespace dayten {
 			executeInstruction(instructions[i], cycle);
 		}
 
-		const p1 = signalStrengths.reduce((sum, val) => sum += val, 0)
-		const p2 = crt.map(row => row.join('')).join(`\n`);
+		const sumArray = (arr: number[]) => {
+			return arr.reduce((sum, val) => sum += val, 0)
+		}
+
+		const formatCRTforConsole = () => {
+			return crt
+				.map(row => row.join(' '))
+				.join(`\n`);
+		}
+
+		const p1 = sumArray(signalStrengths)
+		const p2 = formatCRTforConsole()
 
 		return { p1, p2 }
 	}
@@ -71,7 +82,6 @@ namespace dayten {
 
 	test('example 2', function (): void {
 		const crtOutput = main(sampleInput).p2;
-		console.log(crtOutput)
 		expect(typeof crtOutput).toBe('string');
 	});
 
