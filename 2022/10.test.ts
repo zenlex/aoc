@@ -55,9 +55,11 @@ namespace dayten {
 			}
 		}
 
-		const lastInstruction = instructions.length;
-		for (let i = 0; i < lastInstruction; ++i) {
-			executeInstruction(instructions[i], cycle);
+		const runInstructions = () => {
+			const lastInstruction = instructions.length;
+			for (let i = 0; i < lastInstruction; ++i) {
+				executeInstruction(instructions[i], cycle);
+			}
 		}
 
 		const sumArray = (arr: number[]) => {
@@ -69,6 +71,8 @@ namespace dayten {
 				.map(row => row.join(' '))
 				.join(`\n`);
 		}
+
+		runInstructions();
 
 		const p1 = sumArray(signalStrengths)
 		const p2 = formatCRTforConsole()
