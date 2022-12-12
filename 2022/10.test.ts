@@ -55,13 +55,6 @@ namespace dayten {
 			}
 		}
 
-		const runInstructions = () => {
-			const lastInstruction = instructions.length;
-			for (let i = 0; i < lastInstruction; ++i) {
-				executeInstruction(instructions[i], cycle);
-			}
-		}
-
 		const sumArray = (arr: number[]) => {
 			return arr.reduce((sum, val) => sum += val, 0)
 		}
@@ -70,6 +63,13 @@ namespace dayten {
 			return crt
 				.map(row => row.join(' '))
 				.join(`\n`);
+		}
+
+		const runInstructions = () => {
+			const lastInstruction = instructions.length;
+			for (let i = 0; i < lastInstruction; ++i) {
+				executeInstruction(instructions[i], cycle);
+			}
 		}
 
 		runInstructions();
@@ -87,6 +87,7 @@ namespace dayten {
 	test('example 2', function (): void {
 		const crtOutput = main(sampleInput).p2;
 		expect(typeof crtOutput).toBe('string');
+		expect(crtOutput.length % 40).toBe(39)
 	});
 
 	test('p1 answers', () => console.log(JSON.stringify(main(input).p1, null, 2)));
