@@ -1,3 +1,4 @@
+import { floor } from 'lodash';
 import input from './inputs/14'
 import sampleInput from './inputs/14-sample'
 import './string.extensions';
@@ -20,36 +21,60 @@ namespace template {
 					.map(([x, y]) => ({ x: parseInt(x), y: parseInt(y) }))
 				return coords;
 			})
-		// console.log(paths);
-		const { width, height }: { width: number, height: number } = getBounds(paths);
 
-		const grid: (XYTuple | string)[][] = mapPaths(paths);
+		const { width, height, minX } = getBounds(paths);
 
-		return dropSand(500, 0, grid);
+		const grid: (XYTuple | string)[][] = mapRock(paths);
+
+		return dropSand(500 - minX, 0, grid);
 	}
 
 	function runp2(input: string): number {
-		return 0;
+		const paths: XYTuple[][] = input
+			.toLines()
+			.map((line: string) => {
+				const coords: XYTuple[] = line
+					.split(' -> ')
+					.map(str => str.split(','))
+					.map(([x, y]) => ({ x: parseInt(x), y: parseInt(y) }))
+				return coords;
+			});
+
+		const { width, height, minX } = getBounds(paths);
+
+		const addFloor = (grid: (XYTuple | string)[][], xPadding = 10): (XYTuple | string)[][] => {
+			const paddedGrid = grid.map((row, index) => {
+				return [...Array(xPadding).fill('.'), ...row, ...Array(xPadding).fill('.')]
+			});
+			const width = paddedGrid[0].length;
+			const paddingRows = Array(2).fill(null).map(_ => Array(width).fill('.'))
+			const floorRow = [[]].map(row => Array(width).fill('#'));
+			const gridWithFloor = paddedGrid.concat(paddingRows, floorRow)
+			return gridWithFloor;
+		};
+
+		const X_PADDING = height;
+		const p2grid: (XYTuple | string)[][] = addFloor(mapRock(paths), X_PADDING);
+
+		return dropSand(500 - minX + X_PADDING, 0, p2grid, true)
 	}
 
 	test('example 1', function (): void {
 		expect(main(sampleInput).p1).toBe(24);
 	});
 
-	test.skip('example 2', function (): void {
-		expect(main(sampleInput).p2).toBe(0);
+	test('example 2', function (): void {
+		expect(main(sampleInput).p2).toBe(93);
 	});
 
-	test.skip('answers', () => console.log(JSON.stringify(main(input), null, 2)));
+	test('answers', () => console.log(JSON.stringify(main(input), null, 2)));
 
-	function mapPaths(paths: XYTuple[][]): (XYTuple | string)[][] {
+	function mapRock(paths: XYTuple[][]): (XYTuple | string)[][] {
 		const { width, height, minX } = getBounds(paths);
-		console.log({ width, height, minX })
 		const grid: (XYTuple | string)[][] = Array(height)
 			.fill(null)
 			.map(_ => Array(width - minX).fill('.'));
 
-		//TODO this isn't right - I'm only drawing the vertexes instead of looking at the next point and filling in the whole line. 
 		paths.forEach(path => {
 			for (let i = 0; i < path.length - 1; ++i) {
 				let currPoint = path[i];
@@ -71,11 +96,9 @@ namespace template {
 						grid[newY][newX] = '#'
 					}
 				}
-				console.log(`drew rock at ${newX}, ${newY}; offset${minX}`);
 			}
 		})
 
-		console.log(grid.map(line => line.join('')).join('\n'));
 		return grid;
 	}
 
@@ -93,53 +116,75 @@ namespace template {
 		return { width: maxX + 1, height: maxY + 1, minX }
 	}
 
-	function dropSand(startX: number, startY: number, grid: (XYTuple | string)[][]) {
+	function dropSand(startX: number, startY: number, grid: (XYTuple | string)[][], hasFloor: boolean = false): number {
 		let grains = 0;
 
-		let isAbyss = false;
-		let testGrains = 0;
-		while (!isAbyss) {
+		let isDone = false;
+		while (!isDone) {
 			grains++
 			let currGrain: XYTuple = { x: startX, y: startY }
-			//TODO this needs to update grid so either grid needs to be elevated state or moveGrain needs to be passed the grid and return it which then updates here. Elevated state seems better. 
-
-			isAbyss = moveGrain(currGrain);
+			isDone = moveGrain(currGrain);
 		}
-		return grains;
+		return hasFloor ? grains : grains - 1;
 
 		function moveGrain(grain: XYTuple): boolean {
-			let foundAbyss = false;
 			let moved = false;
-			// TODO solve the state issue above then implement this and you should get the answer. 
-			//move as far as you can. 
+
 			let { x, y } = grain;
-			if (grid[y] === undefined || grid[x] === undefined) {
-				foundAbyss = true;
-				moved = false;
-				return foundAbyss
+			const lastRow = grid.length - 1;
+
+			const updateGrain = (newX: number, newY: number): void => {
+				grid[y][x] = '.'
+				grid[newY][newX] = 'o'
+				x = newX;
+				y = newY;
 			}
-			if (grid[y + 1]?.[x] === '.') {
-				grid[y][x] = '.';
-				grid[y + 1][x] = { x, y: y + 1 };
-				y = y + 1;
-			} else if (grid[y + 1]?.[x - 1] === '.') {
-				grid[y][x] = '.';
-				grid[y + 1][x - 1] = { x: x - 1, y: y - 1 };
-				y = y + 1;
-				x = x - 1;
-			} else if (grid[y + 1]?.[x + 1] === '.') {
-				grid[y][x] = '.';
-				grid[y + 1][x + 1] = { x: x + 1, y: y + 1 }
-				y = y + 1;
-				x = x + 1;
+
+			let newY;
+			let newX;
+
+			const isAbyss = (x: number, y: number): boolean => {
+				const isAbyss = x < 0 || (y == lastRow && grid[y][x] !== '#') || grid[y][x] === undefined
+				return isAbyss
 			}
-			//if moved a grain;
-			foundAbyss = true;
-			return foundAbyss
+
+			do {
+				// can we go down
+				newY = y + 1;
+				if (newY >= lastRow - 1 && hasFloor) {
+					return false;
+				}
+				newX = x;
+				if (isAbyss(newX, newY) && !hasFloor) return true;
+				if (grid[newY][x] === '.') {
+					updateGrain(newX, newY);
+					moved = true;
+				} else { //can we go diag left
+					newX = x - 1;
+					if (isAbyss(newX, newY) && !hasFloor) return true;
+					if (grid[newY][newX] === '.') {
+						updateGrain(newX, newY)
+						moved = true;
+					} else { //can we go diag right
+						newX = x + 1;
+						if (grid[newY][newX] === undefined) return true;
+						if (grid[newY][newX] === '.') {
+							updateGrain(newX, newY)
+							moved = true;
+						} else {
+							grid[y][x] = 'o'
+							moved = false;
+							if (x === startX && y === startY) return true;
+						}
+					}
+				}
+			} while (moved)
+			return false;
 		}
 	}
 
-
-
+	function logGrid(grid: (XYTuple | string)[][]) {
+		console.log(grid.map(line => line.join('')).join('\n'));
+	}
 
 } // end namespace
