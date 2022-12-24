@@ -1,4 +1,5 @@
-Sensor at x=1326566, y=3575946: closest beacon is at x=1374835, y=2000000
+export default
+	`Sensor at x=1326566, y=3575946: closest beacon is at x=1374835, y=2000000
 Sensor at x=2681168, y=3951549: closest beacon is at x=3184941, y=3924923
 Sensor at x=3959984, y=1095746: closest beacon is at x=3621412, y=2239432
 Sensor at x=3150886, y=2479946: closest beacon is at x=3621412, y=2239432
@@ -24,4 +25,4 @@ Sensor at x=65365, y=215977: closest beacon is at x=346716, y=-573228
 Sensor at x=709928, y=2270200: closest beacon is at x=1374835, y=2000000
 Sensor at x=3673956, y=2670437: closest beacon is at x=4029651, y=2547743
 Sensor at x=3250958, y=3999227: closest beacon is at x=3184941, y=3924923
-Sensor at x=3009537, y=3292368: closest beacon is at x=3184941, y=3924923
+Sensor at x=3009537, y=3292368: closest beacon is at x=3184941, y=3924923`
