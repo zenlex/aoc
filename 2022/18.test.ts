@@ -7,17 +7,7 @@ namespace template {
 
 		const runp1 = (): number => {
 			const coords: number[][] = input.toLines().map(line => line.split(',').map(val => parseInt(val)))
-			const clearSides: number = coords.reduce((total, coord) => {
-				const xCoveredLeft: boolean = coords.filter(cand => cand[1] === coord[1] && cand[2] === coord[2] && cand[0] - coord[0] === 1).length > 0;
-				const xCoveredRight: boolean = coords.filter(cand => cand[1] === coord[1] && cand[2] === coord[2] && cand[0] - coord[0] === -1).length > 0;
-				const yCoveredLeft: boolean = coords.filter(cand => cand[0] === coord[0] && cand[2] === coord[2] && cand[1] - coord[1] === 1).length > 0;
-				const yCoveredRight: boolean = coords.filter(cand => cand[0] === coord[0] && cand[2] === coord[2] && cand[1] - coord[1] === -1).length > 0;
-				const zCoveredLeft: boolean = coords.filter(cand => cand[0] === coord[0] && cand[1] === coord[1] && cand[2] - coord[2] === 1).length > 0;
-				const zCoveredRight: boolean = coords.filter(cand => cand[0] === coord[0] && cand[1] === coord[1] && cand[2] - coord[2] === -1).length > 0;
-				return total += [xCoveredLeft, xCoveredRight, yCoveredLeft, yCoveredRight, zCoveredLeft, zCoveredRight].filter(isCovered => isCovered).length;
-			}, 0)
-
-			return clearSides;
+			//TODO: maybe the thing to do here is create an array representing each cube by an int of exposed sides initialized to all 6's. Then walk the coords
 		}
 		let p1 = runp1();
 		return { p1, p2 }
