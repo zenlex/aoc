@@ -1,4 +1,4 @@
-export default
+ const sample =
 	`1000
 2000
 3000
@@ -13,3 +13,4 @@ export default
 9000
 
 10000`;
+export default sample;
