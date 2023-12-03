@@ -35,22 +35,18 @@ struct CubeGrab(i32, i32, i32);
 
 impl CubeGrab {
     pub fn from_string(turn_string: &str) -> Result<CubeGrab, Box<dyn Error>> {
-        let re = Regex::new(r"(?<red>\d+) red|(?<green>\d+) green|(?<blue>\d+) blue").unwrap();
-        let mut red = 0;
-        let mut green = 0;
-        let mut blue = 0;
+        let re = Regex::new(r"(\d+) (red|green|blue)").unwrap();
+        let mut grab = CubeGrab(0, 0, 0);
         for cap in re.captures_iter(turn_string) {
-            if let Some(red_str) = cap.name("red") {
-                red = red_str.as_str().parse().unwrap();
-            }
-            if let Some(green_str) = cap.name("green") {
-                green = green_str.as_str().parse().unwrap();
-            }
-            if let Some(blue_str) = cap.name("blue") {
-                blue = blue_str.as_str().parse().unwrap();
+            let val = cap.get(1).unwrap().as_str().parse()?;
+            match cap.get(2).unwrap().as_str() {
+                "red" => grab.0 = val,
+                "green" => grab.1 = val,
+                "blue" => grab.2 = val,
+                _ => panic!("Invalid color"),
             }
         }
-        Ok(CubeGrab(red, green, blue))
+        Ok(grab)
     }
 }
 
