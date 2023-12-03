@@ -35,20 +35,22 @@ struct CubeGrab(i32, i32, i32);
 
 impl CubeGrab {
     pub fn from_string(turn_string: &str) -> Result<CubeGrab, Box<dyn Error>> {
-        let red = Self::parse_val(turn_string, "red");
-        let green = Self::parse_val(turn_string, "green");
-        let blue = Self::parse_val(turn_string, "blue");
-        let grab = CubeGrab(red, green, blue);
-        Ok(grab)
-    }
-
-    fn parse_val(turn_string: &str, color: &str) -> i32 {
-        let pattern = format!(r"\d+ {}", color);
-        let re = Regex::new(&pattern).unwrap();
-        match re.find(turn_string) {
-            Some(needle) => needle.as_str().split(' ').next().unwrap().parse().unwrap(),
-            None => 0,
+        let re = Regex::new(r"(?<red>\d+) red|(?<green>\d+) green|(?<blue>\d+) blue").unwrap();
+        let mut red = 0;
+        let mut green = 0;
+        let mut blue = 0;
+        for cap in re.captures_iter(turn_string) {
+            if let Some(red_str) = cap.name("red") {
+                red = red_str.as_str().parse().unwrap();
+            }
+            if let Some(green_str) = cap.name("green") {
+                green = green_str.as_str().parse().unwrap();
+            }
+            if let Some(blue_str) = cap.name("blue") {
+                blue = blue_str.as_str().parse().unwrap();
+            }
         }
+        Ok(CubeGrab(red, green, blue))
     }
 }
 
