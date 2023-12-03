@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use crate::utils;
+
 pub fn run() {
     println!("Running D...");
     println!("Part 1: {}", main("./inputs/d1.txt").unwrap());

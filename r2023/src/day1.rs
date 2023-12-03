@@ -1,6 +1,6 @@
-use std::error::Error;
-
+#![allow(dead_code)]
 use crate::utils;
+use std::error::Error;
 pub fn run() {
     println!("Running D1...");
     println!("Part 1: {}", main("./inputs/d1.txt", false).unwrap());
