@@ -12,9 +12,6 @@ pub fn run() {
 }
 
 fn main(input: &str, part: usize) -> Result<usize, Box<dyn Error>> {
-    // parse input into seeds and maps (take chunks, seeds are first, then maps in order)
-    // for seed line, grab digits as groups inline after "seeds: "
-    // for map lines, strip title line, then grab lines as map entries
     let mut lines = utils::read_lines(input)?.map(|l| l.unwrap());
 
     let seeds = lines.next().unwrap()[7..]
