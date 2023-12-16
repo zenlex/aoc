@@ -6,7 +6,7 @@ use indexmap::IndexMap;
 use crate::utils;
 
 pub fn run() {
-    println!("Running D...");
+    println!("Running D5..");
     println!("Part 1: {}", main("./inputs/d5.txt", 1).unwrap());
     println!("Part 2: {}", main("./inputs/d5.txt", 2).unwrap());
 }
