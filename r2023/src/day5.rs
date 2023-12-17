@@ -385,6 +385,16 @@ mod tests {
             (almanac.transform(vec![(0, 99)], &almanac.soil_map)),
             vec![(0, 49), (52, 99), (50, 51)]
         );
+
+        assert_eq!(
+            (almanac.transform(vec![(49, 51), (96, 97), (98, 99)], &almanac.soil_map)),
+            vec![(49, 49), (52, 53), (98, 99), (50, 51)]
+        );
+
+        assert_eq!(
+            (almanac.transform(vec![(0, 10), (12, 20)], &almanac.soil_map)),
+            vec![(0, 10), (12, 20)]
+        );
     }
 
     #[test]
