@@ -168,7 +168,7 @@ impl Almanac {
                     } else {
                         key + range - 1
                     };
-                    index = max(new_end + 1, key + range);
+                    index = max(new_end, key + range);
 
                     let offset_start = match offset {
                         Offset::Pos(v) => new_start + v,
@@ -194,7 +194,7 @@ impl Almanac {
                         } else {
                             key + range - 1
                         };
-                        index = max(new_end + 1, key + range);
+                        index = max(new_end, key + range);
 
                         let offset_start = match offset {
                             Offset::Pos(v) => new_start + v,
@@ -310,7 +310,8 @@ mod tests {
     #[test]
     fn test_part2() {
         assert_eq!(main("./inputs/d5-ex1.txt", 2).unwrap(), 46);
-        // assert_eq!(main("./inputs/d5.txt").unwrap(), 0);
+        assert!(main("./inputs/d5.txt", 2).unwrap() < 24092691);
+        // assert_eq!(main("./inputs/d5.txt", 2).unwrap(), 0);
     }
 
     #[test]
@@ -333,10 +334,6 @@ mod tests {
                 vec![(79, 79), (14, 14), (55, 55), (13, 13)],
                 &almanac.soil_map
             )),
-            vec![(81, 81), (14, 14), (57, 57), (13, 13)]
-        );
-        assert_eq!(
-            (almanac.transform(vec![(79, 92), (55, 67)], &almanac.soil_map)),
             vec![(81, 81), (14, 14), (57, 57), (13, 13)]
         );
     }
