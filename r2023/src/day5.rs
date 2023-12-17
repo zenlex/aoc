@@ -145,19 +145,20 @@ impl Almanac {
     }
 
     fn transform(&self, input: Vec<(usize, usize)>, map: &Map) -> Vec<(usize, usize)> {
-        //TODO: split ranges - so get nearest lte neighbor and check range
         // add new range to output for each split
         let mut keys = map.keys().collect::<Vec<_>>();
         keys.sort();
 
         let mut output = vec![];
         for (start, end) in input {
-            if start < *keys[0] {
-                output.push((start, min(end, *keys[0] - 1)));
-                continue;
-            }
-            let neighbors = Self::get_neighbors(start, &keys);
             let mut index = start;
+            if start < *keys[0] {
+                let new_end = min(end, *keys[0] - 1);
+                output.push((start, new_end));
+                index = new_end + 1;
+            }
+
+            let neighbors = Self::get_neighbors(start, &keys);
 
             if let Some(key) = neighbors.0 {
                 let (offset, range) = map.get(&key).unwrap();
@@ -215,6 +216,38 @@ impl Almanac {
                     }
                 }
             };
+
+            // look at rest of sorted keys and see if there's anything left in index
+            let key_index = keys.iter().position(|&k| k >= &index);
+            keys.iter()
+                .skip(key_index.unwrap_or(keys.len()))
+                .for_each(|key| {
+                    if *key > &end {
+                        return;
+                    }
+                    let (offset, range) = map.get(*key).unwrap();
+                    while index < *key + range && index <= end {
+                        let new_start = index;
+                        let new_end = if end < *key + range {
+                            end
+                        } else {
+                            *key + range - 1
+                        };
+                        index = max(new_end, *key + range);
+
+                        let offset_start = match offset {
+                            Offset::Pos(v) => new_start + v,
+                            Offset::Neg(v) => new_start - v,
+                        };
+
+                        let offset_end = match offset {
+                            Offset::Pos(v) => new_end + v,
+                            Offset::Neg(v) => new_end - v,
+                        };
+
+                        output.push((offset_start, offset_end));
+                    }
+                })
         }
         output
     }
@@ -329,12 +362,28 @@ mod tests {
         soil_map.insert(50, (Offset::Pos(2), 48));
         let mut almanac = Almanac::new();
         std::mem::swap(&mut almanac.soil_map, &mut soil_map);
+        // part 1
         assert_eq!(
             (almanac.transform(
-                vec![(79, 79), (14, 14), (55, 55), (13, 13)],
+                vec![(79, 79), (14, 14), (57, 57), (13, 13)],
                 &almanac.soil_map
             )),
-            vec![(81, 81), (14, 14), (57, 57), (13, 13)]
+            vec![(81, 81), (14, 14), (59, 59), (13, 13)]
+        );
+
+        // part 2
+        assert_eq!(
+            (almanac.transform(vec![(79, 92), (55, 67)], &almanac.soil_map)),
+            vec![(81, 94), (57, 69)]
+        );
+        assert_eq!(
+            (almanac.transform(vec![(97, 99)], &almanac.soil_map)),
+            vec![(99, 99), (50, 51)]
+        );
+
+        assert_eq!(
+            (almanac.transform(vec![(0, 99)], &almanac.soil_map)),
+            vec![(0, 49), (52, 99), (50, 51)]
         );
     }
 
