@@ -75,16 +75,11 @@ fn get_seed_ranges(input: &str, part: usize) -> Vec<(usize, usize)> {
 }
 
 fn get_locations(seeds: Seeds, pipeline: Vec<Map>) -> Locations {
-    let soils = transform(seeds, &pipeline[0]);
-    let fertilizers = transform(soils, &pipeline[1]);
-    let waters = transform(fertilizers, &pipeline[2]);
-    let lights = transform(waters, &pipeline[3]);
-    let temperatures = transform(lights, &pipeline[4]);
-    let humidities = transform(temperatures, &pipeline[5]);
-    transform(humidities, &pipeline[6])
-        .iter()
-        .map(|item| item.0)
-        .collect()
+    let mut result = seeds.clone();
+    for map in pipeline.iter() {
+        result = transform(result, map);
+    }
+    result.iter().map(|item| item.0).collect()
 }
 
 fn transform(seed_ranges: Vec<(usize, usize)>, map: &Map) -> Vec<(usize, usize)> {
