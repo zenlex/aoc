@@ -25,6 +25,25 @@ mod utils {
         let file = File::open(filename)?;
         Ok(io::BufReader::new(file).lines())
     }
+
+    pub fn get_line_groups<P>(filename: P) -> io::Result<Vec<Vec<String>>>
+    where
+        P: AsRef<Path> + Debug,
+    {
+        let lines = read_lines(filename)?.map(|l| l.unwrap());
+        let mut line_groups = vec![];
+        let mut group = vec![];
+        for line in lines {
+            if line.is_empty() {
+                line_groups.push(group);
+                group = vec![];
+            } else {
+                group.push(line);
+            }
+        }
+        line_groups.push(group);
+        Ok(line_groups)
+    }
 }
 
 #[cfg(test)]
