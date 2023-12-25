@@ -35,13 +35,13 @@ fn main(input: &str) -> Result<u32, Box<dyn Error>> {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum HandType {
-    HighCard(u32),
-    OnePair(u32),
-    TwoPairs(u32, u32),
-    ThreeOfAKind(u32),
-    FullHouse(u32, u32),
-    FourOfAKind(u32),
-    FiveOfAKind(u32),
+    HighCard,
+    OnePair,
+    TwoPairs,
+    ThreeOfAKind,
+    FullHouse,
+    FourOfAKind,
+    FiveOfAKind,
 }
 
 type Card = u32;
@@ -80,9 +80,7 @@ impl PartialOrd for Hand {
 
 impl Hand {
     pub fn new(input: &str, bid: u32) -> Self {
-        let mut cards: Vec<Card> = input.chars().map(Self::get_numeric).collect();
-        // cards.sort_by_key(|card| *card);
-        // cards.reverse();
+        let cards: Vec<Card> = input.chars().map(Self::get_numeric).collect();
         let hand_type = Self::get_hand_type(&cards);
         Hand {
             cards,
@@ -110,44 +108,24 @@ impl Hand {
         }
 
         match counts.values().max().unwrap() {
-            5 => HandType::FiveOfAKind(*counts.keys().next().unwrap()),
+            5 => HandType::FiveOfAKind,
 
-            4 => HandType::FourOfAKind(*counts.keys().find(|k| counts[k] == 4).unwrap()),
+            4 => HandType::FourOfAKind,
             3 => {
                 if counts.len() == 2 {
-                    let mut pair = 0;
-                    let mut three = 0;
-                    for (card, count) in counts.iter() {
-                        if *count == 3 {
-                            three = *card;
-                        } else {
-                            pair = *card;
-                        }
-                    }
-                    HandType::FullHouse(three, pair)
+                    HandType::FullHouse
                 } else {
-                    HandType::ThreeOfAKind(*counts.keys().find(|k| counts[k] == 3).unwrap())
+                    HandType::ThreeOfAKind
                 }
             }
             2 => {
                 if counts.len() == 3 {
-                    let mut pair1 = 0;
-                    let mut pair2 = 0;
-                    for (card, count) in counts.iter() {
-                        if *count == 1 {
-                            continue;
-                        } else if pair1 == 0 {
-                            pair1 = *card;
-                        } else {
-                            pair2 = *card;
-                        }
-                    }
-                    HandType::TwoPairs(max(pair1, pair2), min(pair1, pair2))
+                    HandType::TwoPairs
                 } else {
-                    HandType::OnePair(*counts.keys().find(|k| counts[k] == 2).unwrap())
+                    HandType::OnePair
                 }
             }
-            _ => HandType::HighCard(*counts.keys().max().unwrap()),
+            _ => HandType::HighCard,
         }
     }
 }
@@ -158,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        // assert_eq!(main("./inputs/d7-ex1.txt").unwrap(), 6440);
+        assert_eq!(main("./inputs/d7-ex1.txt").unwrap(), 6440);
         assert!(main("./inputs/d7.txt").unwrap() < 251437955);
     }
 
