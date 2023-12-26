@@ -1,11 +1,10 @@
-#![allow(dead_code)]
 use std::{collections::HashMap, error::Error};
 
 use crate::utils;
 
 pub fn run() {
     println!("Running D7..");
-    println!("Part 1: {}", main("./inputs/d7.txt").unwrap());
+    println!("Part 2: {}", main("./inputs/d7.txt").unwrap());
 }
 
 fn main(input: &str) -> Result<u32, Box<dyn Error>> {
@@ -88,7 +87,7 @@ impl Hand {
     fn get_numeric(input: char) -> Card {
         match input {
             'T' => 10,
-            'J' => 11,
+            'J' => 1,
             'Q' => 12,
             'K' => 13,
             'A' => 14,
@@ -103,24 +102,57 @@ impl Hand {
             *count += 1;
         }
 
-        match counts.values().max().unwrap() {
+        let max = counts
+            .iter()
+            .filter(|(card, _)| **card != 1)
+            .max_by_key(|(_, count)| *count)
+            .unwrap_or((&0, &0))
+            .1
+            + counts.get(&1).unwrap_or(&0);
+
+        match max {
             5 => HandType::FiveOfAKind,
 
             4 => HandType::FourOfAKind,
-            3 => {
-                if counts.len() == 2 {
-                    HandType::FullHouse
-                } else {
-                    HandType::ThreeOfAKind
+            3 => match counts.get(&1) {
+                Some(jokers) => match jokers {
+                    1 => {
+                        if counts.len() == 4 {
+                            HandType::ThreeOfAKind
+                        } else {
+                            HandType::FullHouse
+                        }
+                    }
+                    2 => HandType::ThreeOfAKind,
+                    _ => panic!("Invalid number of jokers"),
+                },
+                None => {
+                    if counts.len() == 2 {
+                        HandType::FullHouse
+                    } else {
+                        HandType::ThreeOfAKind
+                    }
                 }
-            }
-            2 => {
-                if counts.len() == 3 {
-                    HandType::TwoPairs
-                } else {
-                    HandType::OnePair
+            },
+            2 => match counts.get(&1) {
+                Some(jokers) => match jokers {
+                    1 => {
+                        if counts.len() == 4 {
+                            HandType::TwoPairs
+                        } else {
+                            HandType::OnePair
+                        }
+                    }
+                    _ => panic!("Invalid number of jokers"),
+                },
+                None => {
+                    if counts.len() == 3 {
+                        HandType::TwoPairs
+                    } else {
+                        HandType::OnePair
+                    }
                 }
-            }
+            },
             _ => HandType::HighCard,
         }
     }
@@ -131,8 +163,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_part1() {
-        assert_eq!(main("./inputs/d7-ex1.txt").unwrap(), 6440);
-        assert!(main("./inputs/d7.txt").unwrap() < 251437955);
+    fn test_part2() {
+        assert_eq!(main("./inputs/d7-ex1.txt").unwrap(), 5905);
+        assert_eq!(main("./inputs/d7.txt").unwrap(), 251735672);
+    }
+
+    #[test]
+    fn test_hand_type() {
+        assert_eq!(Hand::get_hand_type(&[1, 1, 1, 1, 1]), HandType::FiveOfAKind);
     }
 }
