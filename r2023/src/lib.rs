@@ -6,6 +6,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day7p2;
+mod day8;
 
 pub fn run() {
     // day1::run();
@@ -15,7 +16,8 @@ pub fn run() {
     // day5::run();
     // day6::run();
     // day7::run();
-    day7p2::run();
+    // day7p2::run();
+    day8::run();
 }
 mod utils {
 
