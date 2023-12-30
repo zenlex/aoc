@@ -51,9 +51,8 @@ fn main(input: &str, part: usize) -> Result<usize, Box<dyn Error>> {
     }
 
     if part == 2 {
-        //TODO: Calculate length of loop to get each one to z
         // Get LCM of loop lengths
-        let mut cursors: Vec<_> = map.keys().filter(|k| k.ends_with('A')).collect();
+        let cursors: Vec<_> = map.keys().filter(|k| k.ends_with('A')).collect();
         println!("Starting Part 2 with {:?}", cursors);
         let lengths: Vec<_> = cursors
             .iter()
