@@ -5,17 +5,24 @@ use crate::utils;
 
 pub fn run() {
     println!("Running D7..");
-    println!("Part 1: {}", main("./inputs/d7.txt").unwrap());
+    println!("Part 1: {}", main("./inputs/d7.txt", 1).unwrap());
+    println!("Part 2: {}", main("./inputs/d7.txt", 2).unwrap());
 }
 
-fn main(input: &str) -> Result<u32, Box<dyn Error>> {
+fn main(input: &str, part: usize) -> Result<u32, Box<dyn Error>> {
+    let jokers = match part {
+        1 => false,
+        2 => true,
+        _ => panic!("Invalid part"),
+    };
+
     let mut hands: Vec<Hand> = utils::read_lines(input)?
         .map(|line| line.unwrap())
         .map(|line| {
             let mut split = line.split(' ');
             let hand = split.next().unwrap();
             let bid = split.next().unwrap().parse::<u32>().unwrap();
-            Hand::new(hand, bid)
+            Hand::new(hand, bid, jokers)
         })
         .collect();
 
@@ -75,9 +82,12 @@ impl PartialOrd for Hand {
 }
 
 impl Hand {
-    pub fn new(input: &str, bid: u32) -> Self {
-        let cards: Vec<Card> = input.chars().map(Self::get_numeric).collect();
-        let hand_type = Self::get_hand_type(&cards);
+    pub fn new(input: &str, bid: u32, jokers: bool) -> Self {
+        let cards: Vec<Card> = input
+            .chars()
+            .map(|c| Self::get_numeric(c, jokers))
+            .collect();
+        let hand_type = Self::get_hand_type(&cards, jokers);
         Hand {
             cards,
             bid,
@@ -85,10 +95,13 @@ impl Hand {
         }
     }
 
-    fn get_numeric(input: char) -> Card {
+    fn get_numeric(input: char, jokers: bool) -> Card {
         match input {
             'T' => 10,
-            'J' => 11,
+            'J' => match jokers {
+                true => 1,
+                false => 11,
+            },
             'Q' => 12,
             'K' => 13,
             'A' => 14,
@@ -96,31 +109,69 @@ impl Hand {
         }
     }
 
-    fn get_hand_type(cards: &[Card]) -> HandType {
+    fn get_hand_type(cards: &[Card], jokers: bool) -> HandType {
         let mut counts: HashMap<u32, u32> = HashMap::new();
         for card in cards.iter() {
             let count = counts.entry(*card).or_insert(0);
             *count += 1;
         }
 
-        match counts.values().max().unwrap() {
+        let max = if jokers {
+            counts
+                .iter()
+                .filter(|(card, _)| **card != 1)
+                .max_by_key(|(_, count)| *count)
+                .unwrap_or((&0, &0))
+                .1
+                + counts.get(&1).unwrap_or(&0)
+        } else {
+            *counts.values().max().unwrap()
+        };
+
+        match max {
             5 => HandType::FiveOfAKind,
 
             4 => HandType::FourOfAKind,
-            3 => {
-                if counts.len() == 2 {
-                    HandType::FullHouse
-                } else {
-                    HandType::ThreeOfAKind
+            3 => match counts.get(&1) {
+                Some(num_jokers) => match num_jokers {
+                    1 => {
+                        if counts.len() == 4 {
+                            HandType::ThreeOfAKind
+                        } else {
+                            HandType::FullHouse
+                        }
+                    }
+                    2 => HandType::ThreeOfAKind,
+                    _ => panic!("Invalid number of jokers"),
+                },
+                None => {
+                    if counts.len() == 2 {
+                        HandType::FullHouse
+                    } else {
+                        HandType::ThreeOfAKind
+                    }
                 }
-            }
-            2 => {
-                if counts.len() == 3 {
-                    HandType::TwoPairs
-                } else {
-                    HandType::OnePair
+            },
+            2 => match counts.get(&1) {
+                Some(num_jokers) => match num_jokers {
+                    1 => {
+                        if counts.len() == 4 {
+                            HandType::TwoPairs
+                        } else {
+                            HandType::OnePair
+                        }
+                    }
+                    2 => HandType::OnePair,
+                    _ => panic!("Invalid number of jokers"),
+                },
+                None => {
+                    if counts.len() == 3 {
+                        HandType::TwoPairs
+                    } else {
+                        HandType::OnePair
+                    }
                 }
-            }
+            },
             _ => HandType::HighCard,
         }
     }
@@ -132,7 +183,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(main("./inputs/d7-ex1.txt").unwrap(), 6440);
-        assert!(main("./inputs/d7.txt").unwrap() < 251437955);
+        assert_eq!(main("./inputs/d7-ex1.txt", 1).unwrap(), 6440);
+        assert!(main("./inputs/d7.txt", 1).unwrap() < 251437955);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(main("./inputs/d7-ex1.txt", 2).unwrap(), 5905);
+        assert_eq!(main("./inputs/d7.txt", 2).unwrap(), 251735672);
     }
 }
