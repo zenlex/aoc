@@ -21,6 +21,8 @@ pub fn run() {
     // day9::run();
     day10::run();
 }
+
+#[allow(dead_code)]
 mod utils {
 
     use std::fmt::Debug;
@@ -53,6 +55,50 @@ mod utils {
         }
         line_groups.push(group);
         Ok(line_groups)
+    }
+
+    pub fn flood_fill(
+        grid: &[Vec<char>],
+        start: (usize, usize),
+        marker: Option<char>,
+    ) -> Vec<Vec<char>> {
+        let marker = marker.unwrap_or('X');
+        let mut marked = vec![];
+        let mut queue = vec![start];
+        let mut flooded = grid.to_vec();
+        while let Some(current) = queue.pop() {
+            let neighbors = get_neighbors(grid, current);
+            for neighbor in neighbors {
+                if !marked.contains(&neighbor) {
+                    marked.push(neighbor);
+                    queue.push(neighbor);
+                }
+            }
+            flooded[current.1][current.0] = marker;
+        }
+        println!("Flooded:");
+        for row in flooded.iter_mut() {
+            println!("{:?}", row.iter().collect::<String>());
+        }
+        flooded
+    }
+
+    pub fn get_neighbors(grid: &[Vec<char>], start: (usize, usize)) -> Vec<(usize, usize)> {
+        let (x, y) = start;
+        let mut neighbors = vec![];
+        if y > 0 {
+            neighbors.push((x, y - 1));
+        }
+        if x < grid[0].len() - 1 {
+            neighbors.push((x + 1, y));
+        }
+        if y < grid.len() - 1 {
+            neighbors.push((x, y + 1));
+        }
+        if x > 0 {
+            neighbors.push((x - 1, y));
+        }
+        neighbors
     }
 }
 
