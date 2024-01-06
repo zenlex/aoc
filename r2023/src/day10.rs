@@ -23,23 +23,14 @@ fn main(input: &str) -> Result<(i32, i32), Box<dyn Error>> {
 fn p2(grid: Vec<Vec<char>>) -> Result<i32, Box<dyn Error>> {
     let mut dots_inside = 0;
     for row in grid {
-        let mut verts = 0;
-        let mut above = false;
-        let mut first = true;
+        let mut inside = false;
         for c in row {
-            let inside = verts % 2 == 1;
             if c == '.' && inside {
                 dots_inside += 1;
             }
-            if is_vert(c, above, first) {
-                verts += 1;
-                above = match c {
-                    'F' | '7' => false,
-                    'L' | 'J' => true,
-                    _ => above,
-                }
+            if matches!(c, '|' | 'L' | 'J') {
+                inside = !inside;
             }
-            first = false;
         }
     }
 
@@ -47,19 +38,24 @@ fn p2(grid: Vec<Vec<char>>) -> Result<i32, Box<dyn Error>> {
 }
 
 fn plot_pipe(rows: &[Vec<char>]) -> (Vec<Vec<char>>, usize) {
-    let mut grid: Vec<Vec<char>> = rows.iter().map(|r| clear_junk(r)).collect();
+    let mut grid: Vec<Vec<char>> = rows
+        .iter()
+        .map(|r| r.iter().map(|_| '.').collect())
+        .collect();
 
     let start = find_start(rows);
     let (mut x, mut y) = start;
     let mut last = start;
     let mut dist = 0;
+    let start_type = get_start_type(rows, start);
 
     loop {
         if (x, y) == start {
-            grid[y][x] = get_start_type(rows, start)
+            grid[y][x] = start_type
         } else {
             grid[y][x] = rows[y][x];
         }
+
         let neighbors = get_connections(rows, (x, y));
         let next = if neighbors[0] == last {
             neighbors[1]
@@ -75,35 +71,6 @@ fn plot_pipe(rows: &[Vec<char>]) -> (Vec<Vec<char>>, usize) {
     }
 
     (grid, dist)
-}
-
-fn is_vert(c: char, above: bool, first: bool) -> bool {
-    match first {
-        true => is_pipe(c),
-        false => match above {
-            true => matches!(c, '|' | 'J' | 'L'),
-            false => matches!(c, '|' | '7' | 'F'),
-        },
-    }
-}
-
-fn is_pipe(c: char) -> bool {
-    matches!(c, '|' | '-' | 'J' | '7' | 'F' | 'L')
-}
-
-fn clear_junk(row: &[char]) -> Vec<char> {
-    row.iter()
-        .map(|c| {
-            if is_pipe(*c) {
-                'x'
-            } else {
-                match *c {
-                    'I' | 'O' => '.',
-                    _ => *c,
-                }
-            }
-        })
-        .collect()
 }
 
 fn get_connections(grid: &[Vec<char>], start: (usize, usize)) -> Vec<(usize, usize)> {
@@ -138,29 +105,21 @@ fn find_start(rows: &[Vec<char>]) -> (usize, usize) {
 fn get_start_type(grid: &[Vec<char>], start: (usize, usize)) -> char {
     let (x, y) = start;
     let mut connections = vec![];
-    if y > 0 {
-        match grid[y - 1][x] {
-            '|' | '7' | 'F' => connections.push('N'),
-            _ => (),
-        }
+
+    if y > 0 && matches!(grid[y - 1][x], '|' | '7' | 'F') {
+        connections.push('N');
     }
-    if x < grid[0].len() - 1 {
-        match grid[y][x + 1] {
-            '-' | '7' | 'J' => connections.push('E'),
-            _ => (),
-        }
+
+    if x < grid[0].len() - 1 && matches!(grid[y][x + 1], '-' | '7' | 'J') {
+        connections.push('E');
     }
-    if y < grid.len() - 1 {
-        match grid[y + 1][x] {
-            '|' | 'L' | 'J' => connections.push('S'),
-            _ => (),
-        }
+
+    if y < grid.len() - 1 && matches!(grid[y + 1][x], '|' | 'L' | 'J') {
+        connections.push('S');
     }
-    if x > 0 {
-        match grid[y][x - 1] {
-            '-' | 'L' | 'F' => connections.push('W'),
-            _ => (),
-        }
+
+    if x > 0 && matches!(grid[y][x - 1], '-' | 'L' | 'F') {
+        connections.push('W');
     }
 
     match connections[..] {
@@ -191,5 +150,6 @@ mod tests {
         assert_eq!(main("./inputs/d10-ex3.txt").unwrap().1, 4);
         assert_eq!(main("./inputs/d10-ex4.txt").unwrap().1, 8);
         assert_eq!(main("./inputs/d10-ex5.txt").unwrap().1, 10);
+        assert_eq!(main("./inputs/d10.txt").unwrap().1, 357);
     }
 }
