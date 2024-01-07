@@ -1,5 +1,6 @@
 mod day1;
 mod day10;
+mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -19,7 +20,8 @@ pub fn run() {
     // day7::run();
     // day8::run();
     // day9::run();
-    day10::run();
+    // day10::run();
+    day11::run();
 }
 
 #[allow(dead_code)]
@@ -99,6 +101,12 @@ mod utils {
             neighbors.push((x - 1, y));
         }
         neighbors
+    }
+
+    pub fn print_grid(grid: &[Vec<char>]) {
+        for row in grid.iter() {
+            println!("{:?}", row.iter().collect::<String>());
+        }
     }
 }
 
