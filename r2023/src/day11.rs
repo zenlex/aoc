@@ -1,29 +1,38 @@
-use std::error::Error;
+use std::{collections::HashSet, error::Error};
 
 use crate::utils;
 
 pub fn run() {
     println!("Running D11...");
-    println!("Part 1: {}", main("./inputs/d11.txt").unwrap());
-    // println!("Part 2: {}", main("./inputs/d10.txt").unwrap());
+    println!("Part 1: {}", main("./inputs/d11.txt", 2).unwrap());
+    println!("Part 2: {}", main("./inputs/d11.txt", 1000000).unwrap());
 }
 
-fn main(input: &str) -> Result<i32, Box<dyn Error>> {
+fn main(input: &str, expansion_factor: usize) -> Result<usize, Box<dyn Error>> {
     let rows = utils::read_lines(input)?
         .map(|l| l.unwrap())
         .map(|l| l.chars().collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    let grid = expand_universe(&rows);
+    let galaxies = expand_universe(&rows, expansion_factor);
 
-    // for each set insert the rows, then map over the rows inserting at each col (offsetting as you go)
-    // collect set of coords to check so we only check each pair once
-    // for each pair get the shortest path between them
-    // return sum
-    Ok(374)
+    let mut galaxy_pairs = HashSet::new();
+    for (i, galaxy1) in galaxies.iter().enumerate() {
+        for galaxy2 in galaxies.iter().skip(i + 1) {
+            galaxy_pairs.insert((*galaxy1, *galaxy2));
+        }
+    }
+
+    let mut shortest_paths = vec![];
+    for pair in galaxy_pairs {
+        let path = utils::manhattan(pair.0, pair.1);
+        shortest_paths.push(path);
+    }
+
+    Ok(shortest_paths.iter().sum::<usize>())
 }
 
-fn expand_universe(rows: &[Vec<char>]) -> Vec<Vec<char>> {
+fn expand_universe(rows: &[Vec<char>], factor: usize) -> Vec<(usize, usize)> {
     let mut empty_rows = vec![];
     let mut empty_cols = vec![];
 
@@ -39,20 +48,22 @@ fn expand_universe(rows: &[Vec<char>]) -> Vec<Vec<char>> {
         }
     }
 
-    let mut grid = rows.to_vec();
+    let mut galaxies: Vec<(usize, usize)> =
+        rows.iter().enumerate().fold(vec![], |mut acc, (y, row)| {
+            for (x, col) in row.iter().enumerate() {
+                if *col == '#' {
+                    acc.push((x, y));
+                }
+            }
+            acc
+        });
 
-    // insert the empty rows where needed
-    for (offset, row) in empty_rows.iter().enumerate() {
-        grid.insert(row + offset, vec!['.'; rows[0].len()]);
-    }
-    // insert the empty columns where needed
-    for row in grid.iter_mut() {
-        for (offset, col) in empty_cols.iter().enumerate() {
-            row.insert(col + offset, '.');
-        }
+    for galaxy in galaxies.iter_mut() {
+        galaxy.1 += empty_rows.iter().filter(|r| **r < galaxy.1).count() * (factor - 1);
+        galaxy.0 += empty_cols.iter().filter(|c| **c < galaxy.0).count() * (factor - 1);
     }
 
-    grid
+    galaxies
 }
 
 #[cfg(test)]
@@ -61,13 +72,13 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(main("./inputs/d11-ex1.txt").unwrap(), 374);
-        // assert_eq!(main("./inputs/d#.txt").unwrap(), 0);
+        assert_eq!(main("./inputs/d11-ex1.txt", 2).unwrap(), 374);
+        assert_eq!(main("./inputs/d11.txt", 2).unwrap(), 10231178);
     }
 
-    // #[test]
-    // fn test_part2() {
-    //     assert_eq!(main("./inputs/d#-ex2.txt").unwrap(), 0);
-    //     assert_eq!(main("./inputs/d#.txt").unwrap(), 0);
-    // }
+    #[test]
+    fn test_part2() {
+        assert_eq!(main("./inputs/d11-ex1.txt", 10).unwrap(), 1030);
+        assert_eq!(main("./inputs/d11-ex1.txt", 100).unwrap(), 8410);
+    }
 }

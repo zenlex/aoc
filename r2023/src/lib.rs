@@ -108,6 +108,10 @@ mod utils {
             println!("{:?}", row.iter().collect::<String>());
         }
     }
+
+    pub fn manhattan(p1: (usize, usize), p2: (usize, usize)) -> usize {
+        ((p1.0 as i32 - p2.0 as i32).abs() + (p1.1 as i32 - p2.1 as i32).abs()) as usize
+    }
 }
 
 #[cfg(test)]
