@@ -2,6 +2,8 @@ use clap::Parser;
 use anyhow::Result;
 #[allow(unused)]
 mod day1;
+mod template;
+
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {

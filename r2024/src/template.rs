@@ -1,14 +1,18 @@
-use std::error::Error;
-
-use crate::utils;
+#[allow(unused)]
+use aoc_utils::{read_lines, LinesIterator};
+use anyhow::Result;
 
 pub fn run() {
-    println!("Running D10...");
-    println!("Part 1: {}", main("./inputs/d10.txt").unwrap());
-    // println!("Part 2: {}", main("./inputs/d10.txt").unwrap());
+    println!("Running D#...");
+    println!("Part 1: {}", main("./inputs/d#.txt").unwrap());
+    // println!("Part 2: {}", main("./inputs/d#.txt").unwrap());
 }
 
-fn main(input: &str) -> Result<i32, Box<dyn Error>> {}
+fn main(input: &str) -> Result<i32> {
+    let lines = read_lines(input)?;
+    let result = lines.collect().len();
+    Ok(result)
+}
 
 #[cfg(test)]
 mod tests {
@@ -16,7 +20,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(main("./inputs/d10-ex1.txt").unwrap(), 13);
+        assert_eq!(main("./inputs/d#-ex1.txt").unwrap(), 0);
         // assert_eq!(main("./inputs/d#.txt").unwrap(), 0);
     }
 
