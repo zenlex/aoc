@@ -1,7 +1,6 @@
 #[allow(unused)]
 use aoc_utils::{read_lines, LinesIterator};
 use anyhow::Result;
-use std::cmp::Ordering;
 
 type Report=Vec<i32>;
 
