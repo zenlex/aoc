@@ -10,7 +10,7 @@ pub fn run() {
 
 fn main(input: &str) -> Result<i32> {
     let lines = read_lines(input)?;
-    let result = lines.collect().len();
+    let result = lines.count() as i32;
     Ok(result)
 }
 

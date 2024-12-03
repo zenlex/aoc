@@ -1,7 +1,7 @@
 use clap::Parser;
 use anyhow::Result;
-#[allow(unused)]
 mod day1;
+mod day2;
 mod template;
 
 #[derive(Parser, Debug)]
@@ -19,6 +19,7 @@ fn main() {
 fn run_day(day: u8) -> Result<()>{
    match day {
        1 => day1::run(),
+       2 => day2::run(),
        _ => panic!("day {} not implemented yet", day)
    }
    Ok(())
