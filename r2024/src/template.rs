@@ -2,6 +2,7 @@
 use aoc_utils::{read_lines, LinesIterator};
 use anyhow::Result;
 
+#[allow(dead_code)]
 pub fn run() {
     println!("Running D#...");
     println!("Part 1: {}", main("./inputs/d#.txt").unwrap());
