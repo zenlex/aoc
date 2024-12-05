@@ -28,7 +28,40 @@ where
     Ok(grid)
 }
 
-pub type CharGrid = Vec<Vec<char>>;
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Point(pub i32, pub i32);
+
+pub struct CharGrid(Vec<Vec<char>>);
+
+impl CharGrid {
+    pub fn height(&self) -> usize {
+        self.0.len()
+    }
+
+    pub fn width(&self) -> usize {
+        if self.height() > 0 {
+            self.0[0].len()
+        }
+        else{
+            0
+        }
+    }
+
+    pub fn is_out_of_bounds(&self, point: Point) -> bool {
+        point.0 < 0 || point.0 >= self.height() as i32 || point.1 < 0 || point.1 >= self.width() as i32
+    }
+
+    pub fn get(&self, point: Point) -> Option<char> {
+        if !self.is_out_of_bounds(point){
+            Some(self.0[point.0 as usize][point.1 as usize])
+        }else {
+            None
+        }
+    }
+}
+
+
+
 pub fn to_char_grid<P>(filename: P) -> io::Result<CharGrid>
 where
     P: AsRef<Path> + Debug,
@@ -36,7 +69,7 @@ where
     let grid = read_lines(filename)?.map(|l| {
             l.expect("unable to parse line").chars().collect()
     }).collect();
-    Ok(grid)
+    Ok(CharGrid(grid))
 }
 
 pub fn get_line_groups<P>(filename: P) -> io::Result<Vec<Vec<String>>>
