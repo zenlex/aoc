@@ -31,7 +31,7 @@ fn sum_of_products(lines: Vec<String>, bypass:bool) -> i32 {
            match instruction{
                "don't()" => enabled = false,
                "do()" => enabled = true,
-               _ => match (enabled || bypass){
+               _ => match enabled || bypass {
                    true => products.push(parse_mult_op(instruction)),
                    false => {}
                }

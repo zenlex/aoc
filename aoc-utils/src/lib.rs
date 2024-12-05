@@ -15,6 +15,30 @@ where
     Ok(BufReader::new(file).lines())
 }
 
+pub fn to_grid<P>(filename: P, separator: Option<&str>) -> io::Result<Vec<Vec<String>>>
+where
+    P: AsRef<Path> + Debug,
+{
+    let grid = read_lines(filename)?.map(|l| {
+        match separator {
+            Some(sep) => l.expect("unable to parse line").split(sep).map(String::from).collect(),
+            None => l.expect("unable to parse line").chars().map(String::from).collect()
+        }
+    }).collect();
+    Ok(grid)
+}
+
+pub type CharGrid = Vec<Vec<char>>;
+pub fn to_char_grid<P>(filename: P) -> io::Result<CharGrid>
+where
+    P: AsRef<Path> + Debug,
+{
+    let grid = read_lines(filename)?.map(|l| {
+            l.expect("unable to parse line").chars().collect()
+    }).collect();
+    Ok(grid)
+}
+
 pub fn get_line_groups<P>(filename: P) -> io::Result<Vec<Vec<String>>>
 where
     P: AsRef<Path> + Debug,
