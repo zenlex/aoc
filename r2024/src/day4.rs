@@ -44,7 +44,7 @@ fn main(input: &str, part: u8) -> Result<i32> {
     let grid = to_char_grid(input)?;
     let result = match part {
         1 => count_all_xmas(grid)?,
-        // 2 => count_all_x_mas(grid)?,
+        2 => count_all_x_mas(&grid),
         _ => panic!("unexpected part")
     };
     Ok(result)
@@ -111,6 +111,33 @@ fn is_xmas(grid:&CharGrid, start: Point, direction: (i32, i32)) -> bool
     }
 }
 
+// PART 2
+fn count_all_x_mas(grid: &CharGrid) -> i32
+{
+    let mut total = 0;
+    let height = grid.len();
+    let width = grid[0].len();
+
+    // can count in 1 from edge for A's
+    for r in 1..height - 1 {
+        for c in 1..width - 1 {
+            if grid[r][c] == 'A' && is_x_mas(grid, Point(r,c)) { total += 1 }
+        }
+    }
+
+    total
+}
+
+fn is_x_mas(grid: &CharGrid, start: Point) -> bool
+{
+    let tlc = grid[start.0 - 1][start.1 - 1];
+    let trc = grid[start.0 - 1][start.1 + 1];
+    let blc = grid[start.0 + 1][start.1 - 1];
+    let brc = grid[start.0 + 1][start.1 + 1];
+
+    (tlc == 'M' && brc == 'S' || tlc == 'S' && brc == 'M')
+    && (trc == 'M' && blc == 'S' || trc == 'S' && blc == 'M')
+}
 
 #[cfg(test)]
 mod tests {
@@ -124,7 +151,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        // assert_eq!(main("./inputs/d4-ex1.txt", 2).unwrap(), 9);
-        // assert_eq!(main("./inputs/d4.txt", 2).unwrap(), 0);
+        assert_eq!(main("./inputs/d4-ex1.txt", 2).unwrap(), 9);
+        assert_eq!(main("./inputs/d4.txt", 2).unwrap(), 1871);
     }
 }
