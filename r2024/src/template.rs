@@ -9,7 +9,7 @@ pub fn run() {
     // println!("Part 2: {}", main("./inputs/d#.txt", 2).unwrap());
 }
 
-fn main(input: &str, part: u8) -> Result<i32> {
+fn main(input: &str, _part: u8) -> Result<i32> {
     let lines = read_lines(input)?;
     let result = lines.count() as i32;
     Ok(result)
