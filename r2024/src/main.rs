@@ -6,6 +6,7 @@ mod day3;
 mod template;
 mod day4;
 mod day5;
+mod day6;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -26,6 +27,7 @@ fn run_day(day: u8) -> Result<()>{
        3 => day3::run(),
        4 => day4::run(),
        5 => day5::run(),
+       6 => day6::run(),
        _ => panic!("day {} not implemented yet", day)
    }
    Ok(())

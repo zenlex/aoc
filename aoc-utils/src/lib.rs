@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader, Error, Lines};
 use std::path::Path;
 use std::iter::Map;
+use std::ops::Deref;
 
 pub type LinesIterator = Map<Lines<BufReader<File>>, fn(Result<String, Error>) -> String>;
 
@@ -28,7 +29,7 @@ where
     Ok(grid)
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Point(pub i32, pub i32);
 
 pub struct CharGrid(Vec<Vec<char>>);
@@ -59,6 +60,15 @@ impl CharGrid {
         }
     }
 }
+
+impl Deref for CharGrid {
+    type Target = Vec<Vec<char>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 
 
 

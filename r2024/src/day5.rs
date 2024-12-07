@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, HashSet};
 #[allow(unused)]
 use aoc_utils::{read_lines, LinesIterator};
 use anyhow::Result;
