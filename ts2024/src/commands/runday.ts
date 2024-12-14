@@ -20,10 +20,8 @@ export default class Runday extends Command {
 
     const filename = `../d${args.day}.js`
     const {main} = await import(filename);
-    if (flags.part) {
-      main(flags.part);
-    }else{
-      main();
-    }
+    console.log("Running day: ", args.day)
+    const {p1, p2} = main(`d${args.day}.txt`);
+    console.log(`Part 1: ${p1}, Part2: ${p2}`)
   }
 }

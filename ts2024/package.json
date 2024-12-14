@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
+    "day": "node ./bin/run runday",
     "dev": "npx tsc && node ./dist/index.js"
   },
   "repository": {
