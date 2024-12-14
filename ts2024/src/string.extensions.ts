@@ -24,7 +24,7 @@ String.prototype.chunksAndLines = function (): string[][] {
 }
 
 String.prototype.alphaGrid = function (separator: string = ''): string[][] {
-	return this.toLines().map(line => line.split(separator));
+	return this.toLines().filter(l => l != '').map(line => line.split(separator));
 }
 
 
