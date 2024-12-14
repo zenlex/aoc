@@ -1,12 +1,14 @@
-interface String {
-	toChunks(separator?: string): string[],
-	toLines(separator?: string): string[],
-	chunksAndLines(): string[][],
-	alphaGrid(): string[][],
-	toNumericChunks(separator?: string): number[],
-	toNumericLines(separator?: string): number[],
-	numericChunksAndLines(): number[][],
-	numbericGrid(): number[][]
+declare global {
+	interface String {
+		toChunks(separator?: string): string[],
+		toLines(separator?: string): string[],
+		chunksAndLines(): string[][],
+		alphaGrid(): string[][],
+		toNumericChunks(separator?: string): number[],
+		toNumericLines(separator?: string): number[],
+		numericChunksAndLines(): number[][],
+		numbericGrid(): number[][]
+	}
 }
 
 String.prototype.toChunks = function (separator: string = '\n\n'): string[] {
@@ -44,3 +46,5 @@ String.prototype.numbericGrid = function (separator: string = ''): number[][] {
 		return line.split(separator).map(val => parseInt(val))
 	});
 }
+
+export {};
