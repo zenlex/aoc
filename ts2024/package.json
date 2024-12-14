@@ -1,0 +1,24 @@
+{
+  "name": "aoc-ts2024",
+  "version": "1.0.0",
+  "description": "2024 aoc ts practice",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "vitest",
+    "dev": "npx tsc && node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenlex/aoc.git"
+  },
+  "author": "Erich Keil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zenlex/aoc/issues"
+  },
+  "homepage": "https://github.com/zenlex/aoc#readme",
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
