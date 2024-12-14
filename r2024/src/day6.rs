@@ -73,9 +73,13 @@ impl Guard {
     }
 }
 
-fn main(input: &str, _part: u8) -> Result<i32> {
+fn main(input: &str, part: u8) -> Result<i32> {
     let grid = to_char_grid(input)?;
-    let result = p1(grid)?;
+    let result = match part {
+        1 => p1(grid)?,
+        2 => p2(grid)?,
+        _ => panic("invalid part")
+    };
     Ok(result)
 }
 
@@ -93,6 +97,24 @@ fn p1(grid:CharGrid) -> Result<i32> {
     Ok(guard.positions.len() as i32)
 }
 
+fn p2(grid:CharGrid) -> Result<i32> {
+    todo!()
+    /* Algorithm
+        - build directed graph out of grid using a GraphNode struct {position, orientation} - refactor p1 to use this as test case
+        - modify walk() to do graph traversal using new node structure
+        - create a set of candidate obstacle positions (probably just grid positions that are not already obstacles - as nodes (a position will only be an obstacle depending on orientation)) - consider heuristic optimizations?
+        - for each possible obstacle location (use a simulate_obstacle(Node) method):
+            - place obstacle 
+            - walk the guard - do a graph traversal where at each node
+                - check for loop ( min 4 nodes visited ) is cycle if same node and orientation revisited
+                - if cycle detected:
+                    - increment count of obstacle positions that cause a cycle
+                    - remove obstacle position from candidates 
+                    - clear obstacle
+        - return count of obstacle positions that cause cycle
+    */
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,9 +125,9 @@ mod tests {
         assert_eq!(main("./inputs/d6.txt", 1).unwrap(), 5318);
     }
 
-    // #[test]
-    // fn test_part2() {
-    //     assert_eq!(main("./inputs/d6-ex2.txt", 2).unwrap(), 0);
-    //     assert_eq!(main("./inputs/d6.txt", 2).unwrap(), 0);
-    // }
+    #[test]
+    fn test_part2() {
+        assert_eq!(main("./inputs/d6-ex2.txt", 2).unwrap(), 6);
+        // assert_eq!(main("./inputs/d6.txt", 2).unwrap(), 0);
+    }
 }

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "2024 aoc ts practice",
   "main": "./dist/index.js",
+  "type": "module",
   "scripts": {
     "test": "vitest",
     "dev": "npx tsc && node ./dist/index.js"
@@ -18,7 +19,21 @@
   },
   "homepage": "https://github.com/zenlex/aoc#readme",
   "devDependencies": {
+    "@types/node": "^18.19.68",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "bin": {
+    "aoc-ts-2024": "./bin/run.js"
+  },
+  "oclif": {
+    "bin": "aoc-ts-2024",
+    "commands": "./dist/commands",
+    "dirname": "aoc-ts-2024",
+    "topicSeparator": " "
+  },
+  "dependencies": {
+    "@oclif/core": "^4.0.37"
   }
 }
