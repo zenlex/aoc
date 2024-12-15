@@ -12,7 +12,15 @@ export function getLCM(divisors: number[]): number {
 }
 
 export type Point = [number, number]
-export type SerializedPoint = String
+export type SerializedPoint = `${number},${number}`;
+
+export function deserializePoint(coords: SerializedPoint): Point {
+  return coords.split(',').map(n => parseInt(n)) as Point
+}
+
+export function serializePoint(point: Point): SerializedPoint {
+  return `${point[0]},${point[1]}`;
+}
 
 export class GridDef {
   height!: number;
