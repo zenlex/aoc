@@ -6,46 +6,83 @@ export function main(file: string): {p1: number, p2: number} {
   const path = `./inputs/${file}`;
   const input = fs.readFileSync(path, 'utf-8');
   const gridData = input.alphaGrid();
+
   let blocks: Set<SerializedPoint> = new Set();
   let guard = new Guard();
   let grid = new GridDef(gridData);
-  let foundGuard = false;
+
   gridData.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell === '#') {
         blocks.add([y, x].toString());
       } else if (cell === '^') {
-        guard.position.point = [y, x];
-        guard.position.orientaion = Direction.North;
-        foundGuard = true;
+        guard.setSpawn([y, x]);
       }
     });
   });
-  if (!foundGuard){
-    throw new Error("Guard not found");
-  }
+
   return {p1: p1(blocks, guard, grid), p2: p2(blocks, guard, grid)}
 }
 
 function p1(blocks: Set<SerializedPoint>, guard: Guard, grid:GridDef): number {
+  guard.reset();
   return guard.getLocations(grid, blocks).size;
 }
 
 function p2(blocks: Set<SerializedPoint>, guard: Guard, grid:GridDef): number {
-/* Algorithm
-  - p2 obstacle candidates are the locationsCovered except start position
-  - write a cycle detector - pass in the modified blocks and have it return true if cycle, false if guard makes it out
-  - filter candidates to those that create loops and return the length of the set (in JS to filter set, splat to array)
-    */
-  return 0;
+  guard.reset();
+  const candidates: Set<SerializedPoint> = guard.getLocations(grid, blocks)
+
+  guard.reset();
+  candidates.delete(guard.position.point.toString());
+
+  const loops = [...candidates].filter(
+    candidate => causesLoop(new Set([...blocks, candidate]), guard, grid)
+  );
+  return loops.length;
 }
 
+function causesLoop(blocks: Set<SerializedPoint>, guard: Guard, grid: GridDef): boolean {
+  guard.reset();
+  const visited = new Set();
+  while (grid.inBounds(guard.position.point)){
+    if (visited.has(guard.position.toString())){
+      return true;
+    }
+
+    visited.add(guard.position.toString());
+    let turns = 0;
+
+    while (blocks.has(guard.next().toString())){
+      guard.turnRight();
+      turns++;
+      if (turns === 4){
+        return true;
+      }
+    }
+
+    guard.walk();
+  }
+
+  return false;
+}
 
 class Guard {
   position!: Position
+  _spawn!: Point
 
-  constructor() {
+  constructor(spawn?: Point) {
     this.position = new Position([0,0], Direction.North);
+    this._spawn = spawn ?? [0,0];
+  }
+
+  setSpawn(spawn: Point) {  
+    this._spawn = spawn;
+  }
+
+  reset() {
+    this.position.point = this._spawn;
+    this.position.orientaion = Direction.North;
   }
 
   walk() {
