@@ -1,5 +1,5 @@
 import './string.extensions.js'
-import { GridDef, SerializedPoint, deserializePoint, serializePoint } from './advent_grid_utils.js';
+import { GridDef, Point, SerializedPoint, deserializePoint, serializePoint } from './advent_grid_utils.js';
 import {readPuzzleInput, unionSets} from './advent_helpers.js';
 
 type AntennaArray = Map<String, Set<SerializedPoint>>;
@@ -82,22 +82,24 @@ function calculateAntinodes({c1, c2, grid, intermediates}: AntennaPair): Set<Ser
   const dX = x2 - x1;
   let antinodes = new Set<SerializedPoint>();
   if(intermediates){
-    let origin = [x1, y1];
-    let [x, y] = origin;
-    while (grid.inBounds([x,y])) {
-      antinodes.add(serializePoint([x,y]));
-      x = x + dX;
-      y = y + dY;
+    for (const point of intermediatePoints(x1, y1, dX, dY, grid)) {
+      antinodes.add(serializePoint(point));
     }
-      [x, y] = origin;
-    while (grid.inBounds([x,y])) {
-      antinodes.add(serializePoint([x,y]));
-      x = x - dX;
-      y = y - dY;
+    for (const point of intermediatePoints(x1, y1, -dX, -dY, grid)) {
+      antinodes.add(serializePoint(point));
     }
   }else{
     antinodes.add(serializePoint([x1 - dX, y1 - dY]));
     antinodes.add(serializePoint([x2 + dX,y2 + dY]));
   }
   return antinodes;
+}
+
+function* intermediatePoints(x: number, y: number, dX: number, dY: number, grid:GridDef){
+  let [x1, y1] = [x, y];
+  while (grid.inBounds([x1, y1])) {
+    yield [x1, y1] as Point;
+    x1 += dX;
+    y1 += dY;
+  }
 }
