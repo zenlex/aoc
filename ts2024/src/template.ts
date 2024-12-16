@@ -1,8 +1,8 @@
-import fs from 'fs';
+import fs, { read } from 'fs';
+import {readPuzzleInput} from './advent_helpers.js';
 
 export function main(file: string): {p1: number, p2: number} {
-  const path = `./inputs/${file}`;
-  const input = fs.readFileSync(path, 'utf-8');
+  const input = readPuzzleInput(file);
   return {p1: p1(), p2: p2()}
 }
 
