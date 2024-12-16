@@ -1,5 +1,5 @@
 import './string.extensions.js';
-import {GridDef, Point, SerializedPoint, Direction, Position} from './advent_grid_utils.js';
+import {GridDef, Point, SerializedPoint, Direction, Position, serializePoint} from './advent_grid_utils.js';
 import fs from 'fs';
 
 export function main(file: string): {p1: number, p2: number} {
@@ -14,7 +14,7 @@ export function main(file: string): {p1: number, p2: number} {
   gridData.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell === '#') {
-        blocks.add([y, x].toString());
+        blocks.add(serializePoint([y, x]));
       } else if (cell === '^') {
         guard.setSpawn([y, x]);
       }
@@ -34,7 +34,7 @@ function p2(blocks: Set<SerializedPoint>, guard: Guard, grid:GridDef): number {
   const candidates: Set<SerializedPoint> = guard.getLocations(grid, blocks)
 
   guard.reset();
-  candidates.delete(guard.position.point.toString());
+  candidates.delete(serializePoint(guard.position.point));
 
   const loops = [...candidates].filter(
     candidate => causesLoop(new Set([...blocks, candidate]), guard, grid)
@@ -53,7 +53,7 @@ function causesLoop(blocks: Set<SerializedPoint>, guard: Guard, grid: GridDef): 
     visited.add(guard.position.toString());
     let turns = 0;
 
-    while (blocks.has(guard.next().toString())){
+    while (blocks.has(serializePoint(guard.next()))){
       guard.turnRight();
       turns++;
       if (turns === 4){
@@ -102,12 +102,12 @@ class Guard {
   }
 
   getLocations(grid:GridDef, blocks:Set<SerializedPoint>): Set<SerializedPoint> {
-    const positions = new Set([this.position.point.toString()]);
+    const positions = new Set([serializePoint(this.position.point)]);
 
     while (grid.inBounds(this.position.point)){
-      positions.add(this.position.point.toString());
+      positions.add(serializePoint(this.position.point));
       let turns = 0;
-      while (blocks.has(this.next().toString())){
+      while (blocks.has(serializePoint(this.next()))){
           this.turnRight();
           turns++;
         if (turns === 4) {
