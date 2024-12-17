@@ -1,11 +1,15 @@
-import fs from 'fs';
+// import fs from 'fs';
 import {readPuzzleInput} from './advent_helpers.js';
 import './string.extensions.js';
 
 export function main(file: string): {p1: number, p2: number} {
-  const input = readPuzzleInput(file);
-  const disk = new Disk(input.trim());
-  return {p1: disk.compact().checksum(), p2: disk.defrag().checksum()}
+  const input = readPuzzleInput(file).trim();
+  const disk = new Disk(input);
+  const p1 = disk.compact().checksum();
+  // reinitialize disk for p2
+  disk.init(input);
+  const p2 = disk.defrag().checksum();
+  return {p1, p2}
 }
 
 interface Chunk {
@@ -32,7 +36,7 @@ class Disk {
           const size = parseInt(marker);
           if(isFreeSpace) {
             if (size > 0){
-              this.writeFreeSpace(block, size);
+              this.clearFreeSpace(block, size);
             }
             block += size;
           } else {
@@ -41,6 +45,13 @@ class Disk {
           }
           isFreeSpace = !isFreeSpace;
     }
+  }
+
+  init(input: string): Disk {
+    this.freeSpace = [];
+    this.fileMap = new Map();
+    this.deserialize(input);
+    return this;
   }
 
   getEndBlock(chunk: Chunk): number {
@@ -54,29 +65,39 @@ class Disk {
       if (!file) {
         throw new Error('File not found - id: ' + fileId);
       }
+      this.compactFile(file);
 
-      while (this.freeSpace[0].address < this.getEndBlock(file[file.length - 1])) {
-        let target = this.freeSpace[0].address;
-        if (target === undefined) {
-          break;
-        }
+      fileId--;
+    }
+    return this;
+  }
 
-        let source = this.getEndBlock(file[file.length - 1]);
-        if (source === undefined) {
-          break;
-        }
+  compactFile(file: Chunk[]): void {
+      if(this.freeSpace.length === 0) { return; }
+      let lastChunk = file[file.length - 1];
 
-        const writableChunk = file.find((c) => this.getEndBlock(c) === target - 1);
-        if(writableChunk) {
-          writableChunk.size++;
+      while (true) {
+        let source = this.getEndBlock(lastChunk);
+        let target = this.freeSpace[0]?.address;
+
+        if (
+          source == undefined 
+          || target === undefined 
+          || source <= target
+        ) { break; }
+
+        const extendableChunk = file.find((c) => this.getEndBlock(c) === target - 1);
+        if(extendableChunk) {
+          extendableChunk.size++;
         }else{
           const insertionPoint = file.findIndex((c) => c.address > target);
           file.splice(insertionPoint, 0, {address: target, size: 1});
         }
         
-        file[file.length - 1].size--;
-        if (file[file.length - 1].size === 0) {
+        lastChunk.size--;
+        if (lastChunk.size === 0) {
           file.pop();
+          lastChunk = file[file.length - 1];
         }
 
           this.freeSpace[0].address++;
@@ -85,10 +106,6 @@ class Disk {
           this.freeSpace.shift();
         }
       }
-
-      fileId--;
-    }
-    return this;
   }
 
   defrag(): Disk {
@@ -96,12 +113,28 @@ class Disk {
     while(fileId >= 0) {
       let file = this.fileMap.get(fileId);
       if (!file) {throw new Error(`File not found - id: ${fileId}`)}
-      let size = file.length;
-      //TODO - simplify this with a refactor for p1 - don't store individual blocks, store them all as {start, size}
+      let fileSize = file[0].size;
+      let target = this.freeSpace.filter((c) => c.size >= fileSize && c.address < file[0].address)[0];
+      if (!target) {
+        fileId--;
+        continue;
+      }
+      this.moveFile(file, target);
       fileId--;
     }
 
     return this;
+  }
+
+  moveFile(file:Chunk[], target: Chunk): void {
+      let source = file[0];
+      file[0].address = target.address;
+
+      target.address += source.size;
+      target.size -= source.size;
+      if (target.size === 0){ 
+        this.freeSpace = this.freeSpace.filter((c) => c !== target);
+      }
   }
 
   checksum(): number {
@@ -124,7 +157,7 @@ class Disk {
   }
 
 
-  writeFreeSpace(address: number, size: number): void {
+  clearFreeSpace(address: number, size: number): void {
       this.freeSpace.push({address, size});
   }
 

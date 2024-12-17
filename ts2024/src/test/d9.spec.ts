@@ -8,5 +8,5 @@ test('d9p1', function () {
 
 test('d9p2', function () {
   expect(main('d9-ex1.txt').p2).toBe(2858);
-  // expect(main('d9.txt').p2).toBe(1017);
+  expect(main('d9.txt').p2).toBe(6488291456470);
 });
