@@ -14,9 +14,9 @@ export function main(file: string): {p1: number, p2: number} {
   gridData.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell === '#') {
-        blocks.add(serializePoint([y, x]));
+        blocks.add(serializePoint([x, y]));
       } else if (cell === '^') {
-        guard.setSpawn([y, x]);
+        guard.setSpawn([x, y]);
       }
     });
   });
@@ -90,9 +90,8 @@ class Guard {
   }
 
   next(): Point {
-    return this.position.point.map(
-      (val, idx) => val + this.position.orientaion.toVector()[idx]
-    ) as Point;
+    const [dx, dy] = this.position.orientaion.toVector();
+    return [this.position.point[0] + dx, this.position.point[1] + dy];
   }
 
   turnRight() {

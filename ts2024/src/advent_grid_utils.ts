@@ -32,18 +32,20 @@ export class GridDef {
   }
 
   inBounds(coords:Point): boolean {
-    return coords[0] >= 0 
-      && coords[0] < this.height 
-      && coords[1] >= 0 
-      && coords[1] < this.width
+    return coords[1] >= 0 
+      && coords[1] < this.height 
+      && coords[0] >= 0 
+      && coords[0] < this.width
   }
 }
 
+export type Grid = any[][]
+
 export const Direction = {
-  North: {value: 'N', toVector: () => [-1,0]},
-  East: {value: 'E', toVector: () => [0,1]},
-  South: {value: 'S', toVector: () => [1,0]},
-  West: {value: 'W', toVector: () => [0,-1]}
+  North: {value: 'N', toVector: () => [0, -1]},
+  East: {value: 'E', toVector: () => [1,0]},
+  South: {value: 'S', toVector: () => [0,1]},
+  West: {value: 'W', toVector: () => [-1,0]}
 } as const;
 
 export type Direction = typeof Direction[keyof typeof Direction]

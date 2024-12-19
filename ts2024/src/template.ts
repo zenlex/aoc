@@ -1,5 +1,6 @@
 import fs, { read } from 'fs';
 import {readPuzzleInput} from './advent_helpers.js';
+import './string.extensions.js';
 
 export function main(file: string): {p1: number, p2: number} {
   const input = readPuzzleInput(file);
