@@ -1,8 +1,8 @@
 package solvers
 
-func solveD1() (int, error) {
+func solveD1(input string) int {
 	result := 42
-	return result, nil
+	return result
 }
 
 func init() {
