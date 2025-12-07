@@ -1,10 +1,10 @@
 package solvers
 
-func solveD1(input string) int {
+func SolveD1(input string) (int, int) {
 	result := 42
-	return result
+	return result, 0
 }
 
 func init() {
-	Register(1, solveD1)
+	Register(1, SolveD1)
 }

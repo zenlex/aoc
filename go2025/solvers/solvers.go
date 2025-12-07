@@ -1,6 +1,6 @@
 package solvers
 
-type Solver func(input string) int
+type Solver func(input string) (int, int)
 
 var registry = map[int]Solver{}
 

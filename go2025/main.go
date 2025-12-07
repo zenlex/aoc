@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc2025/inputs"
 	"aoc2025/solvers"
 	"fmt"
 )
@@ -20,8 +21,9 @@ func main() {
 		fmt.Printf("day %d not found\n", *day)
 	}
 
-	fmt.Printf("AOC - Go 2025 - Solving day: %d\n\n", *day)
-	result := solver(inputForDay(*day))
+	fmt.Printf("AOC - Go 2025 - Solving day: %d\n", *day)
+	p1, p2 := solver(inputs.InputForDay(*day))
 
-	fmt.Printf("Solution: %v\n", result)
+	fmt.Printf("Part 1: %v\n", p1)
+	fmt.Printf("Part 2: %v\n", p2)
 }
