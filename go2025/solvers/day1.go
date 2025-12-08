@@ -1,60 +1,69 @@
 package solvers
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"strconv"
 	"strings"
 )
 
 func SolveD1(input string) (int, int) {
-	_, debug := os.LookupEnv("DEBUG")
-	current := 50
-	zeros := 0
+	position := 50
+	zerosAtEnd := 0
+	totalZeros := 0
 
-	instructions := strings.Split(input, "\n")
-
-	for _, instruction := range instructions {
-		instruction := []rune(instruction)
-		if len(instruction) == 0 {
+	for _, line := range strings.Split(input, "\n") {
+		line = strings.TrimSpace(line)
+		if len(line) == 0 {
 			continue
 		}
-		direction := string(instruction[0])
-		amountStr := strings.TrimSpace(string(instruction[1:]))
-		amount, _ := strconv.Atoi(amountStr)
 
-		if debug {
-			fmt.Printf("direction:%s amount:%v\n", direction, amount)
-		}
-		amount = amount % 100
-
-		switch direction {
-		case "L":
-			current = current - amount
-			if debug {
-				fmt.Printf("instruction: %s, result:%d\n", string(instruction), current)
-			}
-		case "R":
-			current = current + amount
-			if debug {
-				fmt.Printf("instruction: %s, result:%d\n", string(instruction), current)
-			}
+		dir := 1
+		if line[0] == 'L' {
+			dir = -1
 		}
 
-		for current < 0 {
-			current += 100
+		dist, err := strconv.Atoi(line[1:])
+		if err != nil {
+			log.Fatalf("Invalid number in instruction %q: %s", line, err)
 		}
 
-		for current > 99 {
-			current -= 100
+		delta := dist * dir
+		finalPos := ((position + delta % 100) +100) % 100
+		if finalPos == 0 {
+			zerosAtEnd++
 		}
 
-		if current == 0 {
-			zeros++
-		}
+		totalZeros += countZeroCrossings(position, delta)
+		position = finalPos
 	}
 
-	return zeros, 0
+	return zerosAtEnd, totalZeros
+}
+
+func countZeroCrossings(position, delta int) int {
+	if delta == 0 {return 0}
+
+	dir := 1
+	steps := delta
+	if delta < 0 {
+		dir = -1
+		steps = -delta
+	}
+
+	var kFirst int
+	if dir == 1 {
+		kFirst = 100 - position
+	}else {
+		kFirst = position
+	}
+
+	if kFirst == 0 {kFirst = 100}
+
+	if steps < kFirst {
+		return 0
+	}
+
+	return 1 + (steps - kFirst) / 100
 }
 
 func init() {
