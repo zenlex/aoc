@@ -1,19 +1,20 @@
 package solvers
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
 )
 
 func SolveD2(input string) (int, int) {
-	p2 := 0
 	ranges := strings.Split(input, ",")
 	var invalidIds []int
+	var invalidIdsP2 []int
 
 	for _, r := range ranges {
-		invalidIds = append(invalidIds, getInvalidIds(r)...)
+		invalidP1, invalidP2 := getInvalidIds(r)
+		invalidIds = append(invalidIds, invalidP1...)
+		invalidIdsP2 = append(invalidIdsP2, invalidP2...)
 	}
 
 	p1 := 0
@@ -21,11 +22,17 @@ func SolveD2(input string) (int, int) {
 		p1 += id
 	}
 
+	p2 := 0
+	for _, id := range invalidIdsP2 {
+		p2 += id
+	}
+
 	return p1, p2
 }
 
-func getInvalidIds(input string) []int {
+func getInvalidIds(input string) ([]int, []int) {
 	var invalidIds []int
+	var invalidIdsP2 []int
 	parts := strings.Split(input, "-")
 	start := strings.TrimSpace(parts[0])
 	end := strings.TrimSpace(parts[1])
@@ -44,12 +51,14 @@ func getInvalidIds(input string) []int {
 	for candidate <= endInt {
 		if isInvalid(candidate) {
 			invalidIds = append(invalidIds, candidate)
-			fmt.Printf("Invalid ID found: %d\n", candidate)
+		}
+		if isInvalidP2(candidate) {
+			invalidIdsP2 = append(invalidIdsP2, candidate)
 		}
 		candidate += 1
 	}
 
-	return invalidIds
+	return invalidIds, invalidIdsP2
 }
 
 func isInvalid(id int) bool {
@@ -70,6 +79,16 @@ func isInvalid(id int) bool {
 		right++
 	}
 	return true
+}
+
+func isInvalidP2(id int) bool {
+	idString := strconv.Itoa(id)
+	doubled := idString + idString
+	trimmed := doubled[1 : len(doubled)-1]
+	if strings.Contains(trimmed, idString) {
+		return true
+	}
+	return false
 }
 
 func init() {
