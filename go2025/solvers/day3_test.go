@@ -28,6 +28,7 @@ func TestD3(t *testing.T) {
 		t.Fatalf("p1 should be 16812 but is %d", p1)
 	}
 
-	if p2 != 0 {
+	if p2 != 166345822896410 {
+		t.Fatalf("p2 should be 16634582289641 but is %d", p2)
 	}
 }

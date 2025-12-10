@@ -5,40 +5,36 @@ import (
 )
 
 func SolveD3(input string) (int, int) {
-	p1joltage := 0
-	p2joltage := 0
-	lines := strings.Split(input, "\n")
+	p1 := 0
+	p2 := 0
+	lines := strings.FieldsFunc(input, func(r rune) bool {
+		return r == '\n' || r == ' '
+	})
 	for _, line := range lines {
-		maxP1Joltage := getMaxJoltage(line, 2)
-		p1joltage += maxP1Joltage
-		maxP2joltage := getMaxJoltage(line, 12)
-		p2joltage += maxP2joltage
+		p1 += maxJoltage(line, 2)
+		p2 += maxJoltage(line, 12)
 	}
 
-	return p1joltage, p2joltage
+	return p1, p2
 }
 
-func getMaxJoltage(line string, cells int) int {
+func maxJoltage(line string, cells int) int {
 	digits := lineToDigits(line)
-	if digits == nil {
+	if len(digits) == 0 || cells <= 0 {
 		return 0
 	}
 
-	joltageCells := make([]int, cells)
-	insertionIndex := 0
-	startIndex := 0
-	endIndex := len(digits) - cells
-	candidates := digits[:endIndex+1]
-	remainingCells := cells
+	var joltageCells []int
+	start := 0
 
-	for remainingCells > 0 {
-		candidates = digits[startIndex : endIndex+1]
-		maxIndex, maxValue := getMaxCell(candidates)
-		joltageCells[insertionIndex] = maxValue
-		insertionIndex++
-		startIndex += maxIndex + 1
-		remainingCells--
-		endIndex++
+	for len(joltageCells) < cells && start < len(digits) {
+		end := len(digits) - (cells - len(joltageCells)) + 1
+		if end > len(digits) {
+			end = len(digits)
+		}
+		maxIndex, maxValue := maxCell(digits[start:end])
+		joltageCells = append(joltageCells, maxValue)
+		start += maxIndex + 1
 	}
 
 	maxJoltage := 0
@@ -50,12 +46,8 @@ func getMaxJoltage(line string, cells int) int {
 }
 
 func lineToDigits(line string) []int {
-	clean := strings.TrimSpace(line)
-	if clean == "" {
-		return nil
-	}
-	digits := make([]int, 0, len(clean))
-	for _, r := range clean {
+	digits := make([]int, 0, len(line))
+	for _, r := range line {
 		if r >= '0' && r <= '9' {
 			digits = append(digits, int(r-'0'))
 		}
@@ -63,13 +55,13 @@ func lineToDigits(line string) []int {
 	return digits
 }
 
-func getMaxCell(digits []int) (int, int) {
-	maxDigit := digits[0]
+func maxCell(digits []int) (int, int) {
+	maxDigit := 0
 	maxIndex := 0
-	for i, digit := range digits[1:] {
+	for i, digit := range digits {
 		if digit > maxDigit {
 			maxDigit = digit
-			maxIndex = i + 1
+			maxIndex = i
 		}
 	}
 	return maxIndex, maxDigit
