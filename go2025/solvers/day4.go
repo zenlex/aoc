@@ -4,41 +4,55 @@ import (
 	"strings"
 )
 
+var directions = [8]struct{ dRow, dCol int }{
+	{1, 0},
+	{1, 1},
+	{1, -1},
+	{0, 1},
+	{0, -1},
+	{-1, 0},
+	{-1, 1},
+	{-1, -1},
+}
+
 func SolveD4(input string) (int, int) {
 	p1 := 0
 	p2 := 0
 
 	grid, rows, cols := grid(input)
 
-	scores := scoreGrid(grid)
+	scores := scoreGrid(grid, rows, cols)
 	isFirstPass := true
 	rollsRemovedThisPass := 0
-	for rollsRemovedThisPass > 0 || isFirstPass {
+	for {
 		rollsRemovedThisPass = 0
 		for i := 0; i < rows; i++ {
 			for j := 0; j < cols; j++ {
 				score := scores[i][j]
-				if score < 4 && score != -1 {
-					if isFirstPass {
-						p1++
-					}
-					p2++
-					grid[i][j] = '.'
-					rollsRemovedThisPass++
+				if score >= 4 || score == -1 {
+					continue
 				}
+				if isFirstPass {
+					p1++
+				}
+				p2++
+				grid[i][j] = '.'
+				rollsRemovedThisPass++
 			}
 		}
-		isFirstPass = false
-		scores = scoreGrid(grid)
-		//fmt.Printf("grid: %v \n---\n scores: %v\n", grid, rows)
+		if isFirstPass {
+			isFirstPass = false
+		}
+		if rollsRemovedThisPass == 0 {
+			break
+		}
+		scores = scoreGrid(grid, rows, cols)
 	}
 
 	return p1, p2
 }
 
-func scoreGrid(grid [][]rune) [][]int {
-	rows := len(grid)
-	cols := len(grid[0])
+func scoreGrid(grid [][]rune, rows, cols int) [][]int {
 	scores := make([][]int, rows)
 	for i := range scores {
 		scores[i] = make([]int, cols)
@@ -56,34 +70,21 @@ func countAccessibleRolls(grid [][]rune, row, col int) int {
 		return -1
 	}
 
-	directions := [][]int{
-		{1, 0},
-		{1, 1},
-		{1, -1},
-		{0, 1},
-		{0, -1},
-		{-1, 0},
-		{-1, 1},
-		{-1, -1},
-	}
-
 	rows := len(grid)
-	cols := len(grid)
+	cols := len(grid[0])
 
 	count := 0
-	for _, direction := range directions {
-		target := []int{row + direction[0], col + direction[1]}
-		if inBounds(target, rows, cols) {
-			if grid[target[0]][target[1]] == '@' {
-				count++
-			}
+	for _, d := range directions {
+		nr, nc := row+d.dRow, col+d.dCol
+		if inBounds(nr, nc, rows, cols) && grid[nr][nc] == '@' {
+			count++
 		}
 	}
 	return count
 }
 
-func inBounds(target []int, rows int, cols int) bool {
-	return target[0] < rows && target[1] < cols && target[0] >= 0 && target[1] >= 0
+func inBounds(r, c, rows int, cols int) bool {
+	return r < rows && c < cols && r >= 0 && c >= 0
 }
 
 func grid(input string) ([][]rune, int, int) {
@@ -91,10 +92,7 @@ func grid(input string) ([][]rune, int, int) {
 	grid := make([][]rune, len(lines))
 	rows := len(lines)
 	for i, line := range lines {
-		grid[i] = make([]rune, len(line))
-		for j, v := range line {
-			grid[i][j] = v
-		}
+		grid[i] = []rune(line)
 	}
 	cols := len(grid[0])
 	return grid, rows, cols
