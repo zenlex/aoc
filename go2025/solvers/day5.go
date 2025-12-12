@@ -2,13 +2,13 @@ package solvers
 
 import (
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 func SolveD5(input string) (int, int) {
 	p1 := 0
-	p2 := 0
 
 	/**
 	Intuition:
@@ -39,6 +39,8 @@ func SolveD5(input string) (int, int) {
 		}
 	}
 
+	p2 := countTotalIds(ranges)
+
 	return p1, p2
 }
 
@@ -66,6 +68,37 @@ func ranges(input string) []Range {
 		ranges = append(ranges, Range{Start: start, End: end})
 	}
 	return ranges
+}
+
+func countTotalIds(ranges []Range) int {
+	/**
+	Intuition:
+		-consolidate overlapping ranges
+		-add up max - min + 1 for each consolidated range
+	*/
+
+	sort.Slice(ranges, func(i, j int) bool {
+		return ranges[i].Start < ranges[j].Start
+	})
+
+	consolidated := make([]Range, 0, len(ranges))
+	consolidated = append(consolidated, ranges[0])
+
+	for _, r := range ranges[1:] {
+		last := &consolidated[len(consolidated)-1]
+		if r.Start > last.End {
+			consolidated = append(consolidated, r)
+		} else {
+			last.End = max(r.End, last.End)
+		}
+	}
+
+	totalIds := 0
+	for _, r := range consolidated {
+		totalIds += r.End - r.Start + 1
+	}
+
+	return totalIds
 }
 
 func init() {

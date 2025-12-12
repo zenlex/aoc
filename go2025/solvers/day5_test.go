@@ -7,20 +7,31 @@ import (
 
 func TestD5Ex1(t *testing.T) {
 	input := inputs.ExampleForDay(5, 1)
-	p1, _ := SolveD5(input)
+	p1, p2 := SolveD5(input)
 
 	p1Expected := 3
 	if p1 != p1Expected {
 		t.Fatalf("p1 should be %v, got %v", p1Expected, p1)
 	}
+
+	p2Expected := 14
+	if p2 != p2Expected {
+		t.Fatalf("p2 should be %v, got %v", p2Expected, p2)
+	}
 }
 
 func TestD5(t *testing.T) {
 	input := inputs.InputForDay(5)
-	p1, _ := SolveD5(input)
+	p1, p2 := SolveD5(input)
 
 	p1Expected := 735
 	if p1 != p1Expected {
 		t.Fatalf("p1 should be %v, got %v", p1Expected, p1)
 	}
+
+	p2Expected := 344306344403172
+	if p2 != p2Expected {
+		t.Fatalf("p2 should be %v, got %v", p2Expected, p2)
+	}
+
 }
