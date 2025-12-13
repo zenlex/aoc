@@ -1,7 +1,6 @@
 package solvers
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -12,7 +11,6 @@ type Problem struct {
 }
 
 func (p Problem) Calculate() int {
-	fmt.Printf("Calculating %v for %+v operands...\n", p.Operator, p.Operands)
 	val := 0
 	if p.Operator == "*" {
 		val = 1
@@ -26,7 +24,6 @@ func (p Problem) Calculate() int {
 		}
 	}
 
-	fmt.Println(val)
 	return val
 }
 
@@ -37,10 +34,14 @@ func SolveD6(input string) (int, int) {
 	lines := strings.Split(strings.TrimSpace(input), "\n")
 
 	p1Problems := parseProblemsP1(lines)
-	fmt.Printf("P1 Problems :%v\n", p1Problems)
 
 	for _, problem := range p1Problems {
 		p1 += problem.Calculate()
+	}
+
+	p2Problems := parseProblemsP2(lines)
+	for _, problem := range p2Problems {
+		p2 += problem.Calculate()
 	}
 
 	return p1, p2
@@ -48,7 +49,6 @@ func SolveD6(input string) (int, int) {
 
 func parseProblemsP1(lines []string) []Problem {
 	problems := make([]Problem, len(strings.Fields(lines[0])))
-	fmt.Println("Filling problems")
 
 	for _, line := range lines {
 		values := strings.Fields(line)
@@ -63,6 +63,75 @@ func parseProblemsP1(lines []string) []Problem {
 
 		}
 	}
+
+	return problems
+}
+
+func parseProblemsP2(lines []string) []Problem {
+	columns := linesToColumns(lines)
+	var problems []Problem
+	var current *Problem
+
+	for _, column := range columns {
+		cleaned := make([]rune, 0)
+		for _, char := range column {
+			if char != ' ' {
+				cleaned = append(cleaned, char)
+			}
+		}
+
+		if len(cleaned) == 0 {
+			current = nil
+			continue
+		}
+
+		if current == nil {
+			problems = append(problems, Problem{})
+			current = &problems[len(problems)-1]
+		}
+
+		scanColumn(current, cleaned)
+	}
+
+	return problems
+}
+
+func scanColumn(problem *Problem, column []rune) {
+	n := 0
+	for _, char := range column {
+		if char == '*' || char == '+' {
+			problem.Operator = string(char)
+			break
+		}
+		val := int(char - '0')
+		n = n*10 + val
+	}
+
+	problem.Operands = append(problem.Operands, n)
+}
+
+func linesToColumns(lines []string) [][]rune {
+	for i, line := range lines {
+		lines[i] = strings.TrimRight(line, " \r")
+	}
+
+	numColumns := len(lines[0])
+	for _, line := range lines {
+		if len(line) > numColumns {
+			numColumns = len(line)
+		}
+	}
+
+	columns := make([][]rune, numColumns)
+
+	for _, line := range lines {
+		chars := []rune(line)
+		for i, char := range chars {
+			columns[i] = append(columns[i], char)
+		}
+	}
+
+	return columns
 }
 
 func init() {
