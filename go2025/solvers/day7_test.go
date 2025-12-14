@@ -15,7 +15,7 @@ func TestD7Ex1(t *testing.T) {
 		t.Fatalf("p1 expected %d, got %d", p1Expected, p1)
 	}
 
-	p2Expected := 0
+	p2Expected := 40
 	if p2 != p2Expected {
 		t.Fatalf("p1 expected %d, got %d", p2Expected, p2)
 	}
@@ -31,7 +31,7 @@ func TestD7(t *testing.T) {
 		t.Fatalf("p1 expected %d, got %d", p1Expected, p1)
 	}
 
-	p2Expected := 0
+	p2Expected := 73007003089792
 	if p2 != p2Expected {
 		t.Fatalf("p1 expected %d, got %d", p2Expected, p2)
 	}

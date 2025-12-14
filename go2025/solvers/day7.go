@@ -4,7 +4,7 @@ func SolveD7(input string) (int, int) {
 	p1 := 0
 	p2 := 0
 
-	grid, rows, _ := grid(input)
+	grid, rows, cols := grid(input)
 
 	start := -1
 	for i, r := range grid[0] {
@@ -16,27 +16,33 @@ func SolveD7(input string) (int, int) {
 		panic("start not found")
 	}
 
-	beams := make([]map[int]struct{}, rows)
+	paths := make([][]int, rows)
 	for i := 0; i < rows; i++ {
-		beams[i] = make(map[int]struct{})
+		paths[i] = make([]int, cols)
 	}
-
-	beams[0][start] = struct{}{}
+	paths[0][start] = 1
 
 	for row := 1; row < rows; row++ {
-		for beam := range beams[row-1] {
-			if grid[row][beam] == '^' {
+		for col := range cols {
+			if paths[row-1][col] == 0 {
+				continue
+			}
+			if grid[row][col] == '^' {
 				p1++
-				if beam > 0 {
-					beams[row][beam-1] = struct{}{}
+				if col > 0 {
+					paths[row][col-1] += paths[row-1][col]
 				}
-				if beam+1 < len(grid[row]) {
-					beams[row][beam+1] = struct{}{}
+				if col+1 < cols {
+					paths[row][col+1] += paths[row-1][col]
 				}
 			} else {
-				beams[row][beam] = struct{}{}
+				paths[row][col] += paths[row-1][col]
 			}
 		}
+	}
+
+	for col := range cols {
+		p2 += paths[rows-1][col]
 	}
 
 	return p1, p2
