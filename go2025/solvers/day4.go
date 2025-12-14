@@ -89,6 +89,10 @@ func inBounds(r, c, rows int, cols int) bool {
 
 func grid(input string) ([][]rune, int, int) {
 	lines := strings.FieldsFunc(input, func(r rune) bool { return r == '\n' || r == '\r' })
+	if len(lines) == 0 {
+		return nil, 0, 0
+	}
+
 	grid := make([][]rune, len(lines))
 	rows := len(lines)
 	for i, line := range lines {
